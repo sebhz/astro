@@ -52,7 +52,7 @@ local function astrology(body, jd)
 	
 	return signs[i]
 end
-i
+
 if astro == nil then astro = {} end
 astro["pseudoscience"] = { biorhythm = biorhythm,
                            astrology = astrology }
