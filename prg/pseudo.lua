@@ -7,5 +7,5 @@ local astrology = astro.pseudoscience.astrology
 
 print(biorhythm(cal_to_jd(1973, 4, 28.75)))
 
-print(astrology("Venus", cal_to_jd(1973, 4, 28.75)))
-print(astrology("Venus"))
+astrology()
+astrology(cal_to_jd(1973, 4, 28.75))

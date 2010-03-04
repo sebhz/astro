@@ -34,9 +34,10 @@ local function biorhythm(jd_origin, jd_current)
 	return physical, emotional, intellectual, intuitive
 end
 
-local function astrology(body, jd)
+local function astrology(jd)
 	local signs = { "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces" };
-	
+	local planets = { "Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune" }
+
 	if jd == nil then 
 		local d = os.date("*t")
 		local fday = (d.hour*3600+d.min*60+d.sec)/seconds_per_day
@@ -45,12 +46,12 @@ local function astrology(body, jd)
 	
 	local deltaPsi = nut_in_lon(jd)
 	local epsilon  = true_obliquity(jd)
-	local ra, decl = geocentric_planet(jd, body, deltaPsi, epsilon, days_per_second)
-	local long, lat = equ_to_ecl(ra, decl, epsilon)
-	
-	local i = 1+math.floor(math.deg(long)/30);
-	
-	return signs[i]
+	for i, p in ipairs(planets) do
+		local ra, decl = geocentric_planet(jd, p, deltaPsi, epsilon, days_per_second)
+		local long, lat = equ_to_ecl(ra, decl, epsilon)
+		local i = 1+math.floor(math.deg(long)/30)
+		print(p.." is in "..signs[i])
+	end 
 end
 
 if astro == nil then astro = {} end
