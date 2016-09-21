@@ -1,4 +1,0 @@
-A Lua implementation of (some) of the cabalistic formulas from Jan Meeus, in his "Astronomical Algorithms" (1998 edition).
-This code is heavily based on Bill McClain Python program, with some addenda and corrections. See http://astrolabe.sourceforge.net/ for the original Python implementation.
-It was rewritten in Lua mainly for easy integration of some of the calculation to create monitors within the Notion window manager, that I happen to use (http://notion.sourceforge.net/).
-I was planning to rewrite part/all of it in Java for an Android version, but lost motivation !
