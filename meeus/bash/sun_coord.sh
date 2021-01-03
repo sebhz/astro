@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+#set -x
 
 ASTRO_SH_LIB_PATH="$(dirname ${BASH_SOURCE[0]})/lib"
 . $ASTRO_SH_LIB_PATH/util

@@ -54,6 +54,9 @@ define atan2(y, x) {
         return -pi;
     }
 
+    if (x == 0)
+        return copysign(pi/2, y)
+
     phi=a(abs(y/x));
     if (x > 0)
         return copysign(phi, y);
