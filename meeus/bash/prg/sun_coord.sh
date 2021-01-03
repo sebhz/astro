@@ -36,5 +36,5 @@ get_sun_coord(){
 
 lat=$1
 long=$2
-get_sun_coord "$(date +"%Y %m %d %H %M %S")" $lat $long
+get_sun_coord "$(date -u +"%Y %m %d %H %M %S")" $lat $long
 
