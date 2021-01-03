@@ -42,13 +42,21 @@ obliquity_moon_mean_longitude()
     echo "218.3165 + 481267.8813*$_T" | bc -l
 }
 
+obliquity_apparent_correction()
+{
+    _TE=$1
+    _nutation_longitude=$(obliquity_delta_psi $_TE)
+    _epsilon=$(obliquity_ecliptic_true $_TE)
+    echo $(echo "$_nutation_longitude/15*c($_epsilon)" | bc -l)
+}
+
 obliquity_delta_psi()
 {
-    _T=$1
+    _TE=$1 # Careful. This is derived from Julian Ephemeris Day
 
-    _omega=$(obliquity_moon_asc_node_longitude $_T)
-    _L=(obliquity_sun_mean_longitude $_T)
-    _Lprime=(obliquity_moon_mean_longitude $_T)
+    _omega=$(obliquity_moon_asc_node_longitude $_TE)
+    _L=(obliquity_sun_mean_longitude $_TE)
+    _Lprime=(obliquity_moon_mean_longitude $_TE)
 
     echo "dms_to_deg(0,0,-17.2)*s(rad($_omega))-dms_to_deg(0,0,1.32)*s(rad(2*$_L)) \
         - dms_to_deg(0,0,0.23)*s(rad(2*$_Lprime))+dms_to_deg(0,0,0.21)*s(rad(2*$_omega))" | bc -l

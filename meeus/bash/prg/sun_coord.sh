@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -x
+# set -x
 
 if [ -z ${ASTRO_SH_LIB_PATH+x} ]
 then
@@ -26,7 +26,10 @@ get_sun_coord(){
     # ...but hour angle must be computed from Julian Day (UT)
     __JD=$(dt_jd_from_date $1)
     __H=$(dt_get_local_hour_angle $__JD $__longitude $__right_ascension)
-    __horizontal_coord=$(equatorial_to_horizontal $__H $__latitude $__declination)
+    # This is hour angle computed from mean sidereal time - correct it to get apparent sidereal time
+    __obliquity_correction=$(obliquity_apparent_correction $__TE)
+    __apparent_hour_angle=$(echo "$__obliquity_correction + $__H" | bc -l)
+    __horizontal_coord=$(equatorial_to_horizontal $__apparent_hour_angle $__latitude $__declination)
     __AZIMUTH=$(echo $__horizontal_coord | cut -d' ' -f1)
     __ALTITUDE=$(echo $__horizontal_coord | cut -d' ' -f2)
     echo -n $(echo "scale=2; $__ALTITUDE/1" | bc -l)

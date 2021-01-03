@@ -61,9 +61,9 @@ dt_j2000_t()
     echo "($_jd-2451545.0)/36525" | bc -l
 }
     
-# Return current sidereal time at greenwich
+# Return mean sidereal time at greenwich
 # @Meeus 12.4
-dt_sidereal_greenwich()
+dt_mean_sidereal_greenwich()
 {
     _jd=$1
     _T=$(dt_j2000_t $_jd)
@@ -79,7 +79,7 @@ dt_get_local_hour_angle() {
     _alpha=$3
     
     
-    _sid=$(dt_sidereal_greenwich $_jd)
+    _sid=$(dt_mean_sidereal_greenwich $_jd)
     echo "$_sid - $_longitude - $_alpha" | bc -l
 }
 
@@ -115,10 +115,10 @@ dt_test_jd()
 dt_test_sidereal_time()
 {
     # @Meeus 12.a
-    v=$(dt_sidereal_greenwich $(dt_jd_from_date 1987 04 10 0 0 0))
+    v=$(dt_mean_sidereal_greenwich $(dt_jd_from_date 1987 04 10 0 0 0))
     ut_assert $(echo "scale=6; $v/1" | bc -l) $(echo "scale=6;13*15 + 10*15/60 + 46.3668*15/3600" | bc -l) 12.a
     # @Meeus 12b
-    v=$(dt_sidereal_greenwich $(dt_jd_from_date 1987 04 10 19 21 0))
+    v=$(dt_mean_sidereal_greenwich $(dt_jd_from_date 1987 04 10 19 21 0))
     ut_assert $(echo "scale=6; $v/1" | bc -l) 128.737873 12.b
 }
     
