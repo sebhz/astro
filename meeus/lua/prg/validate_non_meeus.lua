@@ -18,12 +18,12 @@ local function report(label, computed, reference, delta, units)
         print("\t\t\tcomputed   ="..computed)
         print("\t\t\treference   ="..reference)
         print("\t\t\tdifference ="..math.abs(computed - reference).." "..units)
-	end
+    end
 end
-    
+
 function report_diff(label, computed, reference, units)
     print("\t"..label.." -- difference: "..(computed - reference).." "..units.." (expected)")
-end    
+end
 
 
 print("Lunation number")

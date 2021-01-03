@@ -34,7 +34,7 @@ local _k1 = math.rad(360.985647)
 
 --[[
 Return the Julian Day of the rise time of an object.
-    
+
     Parameters:
         jd      : Julian Day number of the day in question, at 0 hr UT
         raList  : a sequence of three right accension values, in radians,
@@ -44,10 +44,10 @@ Return the Julian Day of the rise time of an object.
         h0      : the standard altitude in radians
         delta   : desired accuracy in days. Times less than one minute are
             infeasible for rise times because of atmospheric refraction.
-            
+
     Returns:
         Julian Day of the rise time
-    
+
 --]]
 local function rise(jd, raList, decList, h0, delta)
     local longitude = astro.globals.longitude
@@ -62,20 +62,20 @@ local function rise(jd, raList, decList, h0, delta)
     --
     if cosH0 < -1.0 then -- circumpolar
         return nil
-	end	
+    end
     if cosH0 > 1.0 then -- never rises
         return nil
-	end
+    end
 
-    local H0 = math.acos(cosH0)    
+    local H0 = math.acos(cosH0)
     local m0 = (raList[1] + longitude - THETA0) / pi2
     local m = m0 - H0 / pi2  -- this is the only difference between rise() and set()
     if m < 0 then
         m = m+1
     elseif m > 1 then
         m = m-1
-	end
-	
+    end
+
     if m < 0 or m > 1 then error("m is out of range = "..m) end
     for bailout=1,20 do
         local m0 = m
@@ -87,16 +87,16 @@ local function rise(jd, raList, decList, h0, delta)
         local H = theta0 - longitude - ra
         H = diff_angle(0.0, H)
         local A, h
-		A, h = equ_to_horiz(H, dec)
+        A, h = equ_to_horiz(H, dec)
         local dm = (h - h0) / (pi2 * math.cos(dec) * math.cos(latitude) * math.sin(H))
         m = m+dm
         if math.abs(m - m0) < delta then return jd + m end
-	end
-	error("bailout")
+    end
+    error("bailout")
 end
 
 --[[ Return the Julian Day of the set time of an object.
-    
+
     Parameters:
         jd      : Julian Day number of the day in question, at 0 hr UT
         raList  : a sequence of three right accension values, in radians,
@@ -106,10 +106,10 @@ end
         h0      : the standard altitude in radians
         delta   : desired accuracy in days. Times less than one minute are
             infeasible for set times because of atmospheric refraction.
-            
+
     Returns:
         Julian Day of the set time
-    
+
  --]]
 local function set(jd, raList, decList, h0, delta)
     local longitude = astro.globals.longitude
@@ -124,20 +124,20 @@ local function set(jd, raList, decList, h0, delta)
     --
     if cosH0 < -1.0 then -- circumpolar
         return nil
-	end	
+    end
     if cosH0 > 1.0 then -- never rises
         return nil
-	end
+    end
 
-    local H0 = math.acos(cosH0)    
+    local H0 = math.acos(cosH0)
     local m0 = (raList[1] + longitude - THETA0) / pi2
     local m = m0 + H0 / pi2  -- this is the only difference between rise() and set()
     if m < 0 then
         m = m+1
     elseif m > 1 then
         m = m-1
-	end
-	
+    end
+
     if m < 0 or m > 1 then error("m is out of range = "..m) end
     for bailout=1,20 do
         local m0 = m
@@ -149,42 +149,42 @@ local function set(jd, raList, decList, h0, delta)
         local H = theta0 - longitude - ra
         H = diff_angle(0.0, H)
         local A, h
-		A, h = equ_to_horiz(H, dec)
+        A, h = equ_to_horiz(H, dec)
         local dm = (h - h0) / (pi2 * math.cos(dec) * math.cos(latitude) * math.sin(H))
         m = m+dm
         if math.abs(m - m0) < delta then return jd + m end
-	end
-	error("bailout")
+    end
+    error("bailout")
 end
 
---[[   
+--[[
 Return the Julian Day of the transit time of an object.
-    
+
     Parameters:
         jd      : Julian Day number of the day in question, at 0 hr UT
         raList  : a sequence of three right accension values, in radians,
             for (jd-1, jd, jd+1)
-        delta   : desired accuracy in days. 
-            
+        delta   : desired accuracy in days.
+
     Returns:
         Julian Day of the transit time
-    
+
 --]]
 local function transit(jd, raList, delta)
     --
-    -- future: report both upper and lower culmination, and transits of objects below 
+    -- future: report both upper and lower culmination, and transits of objects below
     -- the horizon
-    -- 
+    --
     local longitude = astro.globals.longitude
     local THETA0 = mean_sidereal_time_greenwich(jd)
     local deltaT_days = deltaT_seconds(jd) / seconds_per_day
-    
+
     local m = (raList[1] + longitude - THETA0) / pi2
     if m < 0 then
         m = m+1
     elseif m > 1 then
         m = m-1
-	end
+    end
     if m < 0 or m > 1 then error("m is out of range = "..m) end
     for bailout=1,20 do
         local m0 = m
@@ -197,31 +197,31 @@ local function transit(jd, raList, delta)
         local dm = -H/pi2
         m = m+dm
         if math.abs(m - m0) < delta then return jd + m end
-	end
+    end
 
     error("bailout")
 end
-    
+
 --[[
 Return the standard altitude of the Moon.
-    
+
     Parameters:
         r : Distance between the centers of the Earth and Moon, in km.
-            
+
     Returns:
         Standard altitude in radians.
-    
+
 --]]
 local function moon_rst_altitude(r)
     -- horizontal parallax
     local parallax = math.asin(earth_equ_radius / r)
-    
+
     return 0.7275 * parallax + standard_rst_altitude
 end
 
 if astro == nil then astro = {} end
 astro["riseset"] = { moon_rst_altitude = moon_rst_altitude,
                      transit           = transit,
-					 set               = set,
-					 rise              = rise }
+                     set               = set,
+                     rise              = rise }
 return astro

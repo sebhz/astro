@@ -12,42 +12,42 @@ local dt_to_ut   = astro.dynamical.dt_to_ut
 local fday_to_hms = astro.util.fday_to_hms
 
 local function usage()
-	print("Usage:\n\t"..arg[0]..": year")
+    print("Usage:\n\t"..arg[0]..": year")
 end
 
 if #arg ~= 1 then
-	usage()
-	return
+    usage()
+    return
 end
 
 local yr = tonumber(arg[1])
 -- Find the first new moon of the year
 local jdnew = moon_phase(cal_to_jd(yr), 0)
 
-repeat 
-	local l  = lunation(jdnew)
-	local jdsave = jdnew
-	
-	local lt, zone = ut_to_lt(dt_to_ut(jdnew), "minute")
-	local nt = lt_to_str(lt, zone, "minute")
+repeat
+    local l  = lunation(jdnew)
+    local jdsave = jdnew
 
-	jdnew = moon_phase(jdnew+7, 1)
-	lt, zone = ut_to_lt(dt_to_ut(jdnew), "minute")
-	local qt = lt_to_str(lt, zone, "minute")
+    local lt, zone = ut_to_lt(dt_to_ut(jdnew), "minute")
+    local nt = lt_to_str(lt, zone, "minute")
 
-	jdnew = moon_phase(jdnew+7, 2)
-	lt, zone = ut_to_lt(dt_to_ut(jdnew), "minute")
-	local ft = lt_to_str(lt, zone, "minute")
+    jdnew = moon_phase(jdnew+7, 1)
+    lt, zone = ut_to_lt(dt_to_ut(jdnew), "minute")
+    local qt = lt_to_str(lt, zone, "minute")
 
-	jdnew = moon_phase(jdnew+7, 3)
-	lt, zone = ut_to_lt(dt_to_ut(jdnew), "minute")
-	local qqt = lt_to_str(lt, zone, "minute")
-	
-	jdnew = moon_phase(jdnew+7, 0)
-	
-	-- Duration of the lunation
-	local d, i = math.modf(jdnew-jdsave)
-	local h, m , s = fday_to_hms(i)
-	
-	print(l.." | "..nt.." | "..qt.." | "..ft.." | "..qqt.." | ".. d..":"..h..":"..m)
+    jdnew = moon_phase(jdnew+7, 2)
+    lt, zone = ut_to_lt(dt_to_ut(jdnew), "minute")
+    local ft = lt_to_str(lt, zone, "minute")
+
+    jdnew = moon_phase(jdnew+7, 3)
+    lt, zone = ut_to_lt(dt_to_ut(jdnew), "minute")
+    local qqt = lt_to_str(lt, zone, "minute")
+
+    jdnew = moon_phase(jdnew+7, 0)
+
+    -- Duration of the lunation
+    local d, i = math.modf(jdnew-jdsave)
+    local h, m , s = fday_to_hms(i)
+
+    print(l.." | "..nt.." | "..qt.." | "..ft.." | "..qqt.." | ".. d..":"..h..":"..m)
 until jd_to_cal(jdnew) ~= yr

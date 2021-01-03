@@ -48,7 +48,7 @@ local _tb = {
     {3, 0, -2,        -3,       -1,        0,         1,         2,      -10},
     {3, 0, -1,         5,       -3,        0,         0,        19,       35},
     {3, 0,  0,         0,        0,        1,         0,        10,        3} }
-    
+
 --[[
     Compute heliocentric coordinates of Pluto.
     Meeus - chapter 37
@@ -63,9 +63,9 @@ local function heliocentric_pluto(jd)
     local J = math.rad(34.35 + 3034.9057*T) -- Mean longitude of Jupiter
     local S = math.rad(50.08 + 1222.1138*T) -- Mean longitude of Saturn
     local P = math.rad(238.96 + 144.9600*T) -- Mean longitude of Pluto
-    
-	local l, b, r = 0, 0 , 0
-    
+
+    local l, b, r = 0, 0 , 0
+
     for i, j, k, Al, Bl, Ab, Bb, Ar, Br in tb_iterator(_tb) do
         local alpha = i*J + j*S + k*P
         local s = math.sin(alpha)
@@ -77,16 +77,16 @@ local function heliocentric_pluto(jd)
     l = l*1e-6 + 238.958116 + 144.96*T
     b = b*1e-6 - 3.908239
     r = r*1e-7 + 40.7241346
-    
+
     return l, b, r
 end
 
 local function geocentric_pluto(jd)
-	local l, b, r = heliocentric_pluto(jd)
-	local x = r*math.cos(l)*math.cos(b)
-	-- cos e = 0.917482062, sin e = 0.397777156 - e is the mean obliquity of the ecliptic at J2000.0
-	local y = r*(math.sin(l)*math.cos(b)*0.917482062 - math.sin(b)*0.397777156)
-	local z = r*(math.sin(l)*math.cos(b)*0.397777156 + math.sin(b)*0.917482062)
+    local l, b, r = heliocentric_pluto(jd)
+    local x = r*math.cos(l)*math.cos(b)
+    -- cos e = 0.917482062, sin e = 0.397777156 - e is the mean obliquity of the ecliptic at J2000.0
+    local y = r*(math.sin(l)*math.cos(b)*0.917482062 - math.sin(b)*0.397777156)
+    local z = r*(math.sin(l)*math.cos(b)*0.397777156 + math.sin(b)*0.917482062)
 end
 
 if astro == nil then astro = {} end

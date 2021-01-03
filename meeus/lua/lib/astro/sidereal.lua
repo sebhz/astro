@@ -16,15 +16,15 @@ local nut_in_ra      = astro.nutation.nut_in_ra
 
 --[[
 Return the mean sidereal time at Greenwich.
-    
+
     The Julian Day number must represent Universal Time.
-    
+
     Parameters:
         jd : Julian Day number
-        
+
     Return:
         sidereal time in radians (2pi radians = 24 hrs)
---]]    
+--]]
 local function mean_sidereal_time_greenwich(jd)
     local T = jd_to_jcent(jd)
     local T2 = T * T
@@ -36,18 +36,18 @@ end
 
 --[[
 Return the apparent sidereal time at Greenwich.
-    
+
     The Julian Day number must represent Universal Time.
-    
+
     Parameters:
         jd : Julian Day number
-        
+
     Return:
         sidereal time in radians (2pi radians = 24 hrs)
---]]    
+--]]
 local function apparent_sidereal_time_greenwich(jd)
-	-- Nutation in right ascension should be computed from the DT julian date - we neglect the difference here
-	return modpi2(mean_sidereal_time_greenwich(jd)+nut_in_ra(jd))
+    -- Nutation in right ascension should be computed from the DT julian date - we neglect the difference here
+    return modpi2(mean_sidereal_time_greenwich(jd)+nut_in_ra(jd))
 end
 
 if astro == nil then astro = {} end

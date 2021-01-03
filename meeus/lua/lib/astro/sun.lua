@@ -30,18 +30,18 @@ Return one of geocentric ecliptic longitude, latitude and radius.
             radius in au.
 --]]
 local function dimension(jd, dim)
-	local X = vsop87d.dimension(jd, "Earth", dim)
+    local X = vsop87d.dimension(jd, "Earth", dim)
     if dim == "L" then
         X = modpi2(X + math.pi)
     elseif dim == "B" then
         X = -X
     end
-	return X
+    return X
 end
 
 --[[
 Return geocentric ecliptic longitude, latitude and radius.
-        
+
         Parameters:
             jd : Julian Day in dynamical time
 
@@ -49,7 +49,7 @@ Return geocentric ecliptic longitude, latitude and radius.
             longitude in radians
             latitude in radians
             radius in au
-        
+
   --]]
 local function dimension3(jd)
     local L = dimension(jd, "L")
@@ -69,8 +69,8 @@ local _ck3 = math.rad( 0.019993)
 local _ck4 = math.rad(-0.000101)
 local _ck5 = math.rad( 0.000289)
 
--- Return geometric longitude and radius vector. 
--- Low precision. The longitude is accurate to 0.01 degree. 
+-- Return geometric longitude and radius vector.
+-- Low precision. The longitude is accurate to 0.01 degree.
 -- The latitude should be presumed to be 0.0. [Meeus-1998: equations 25.2 through 25.5
 --    Parameters:
 --        jd : Julian Day in dynamical time
@@ -101,9 +101,9 @@ local _lk1 = math.rad(1934.136)
 local _lk2 = math.rad(0.00569)
 local _lk3 = math.rad(0.00478)
 
--- Correct the geometric longitude for nutation and aberration.   
+-- Correct the geometric longitude for nutation and aberration.
 --    Low precision. [Meeus-1998: pg 164]
---    
+--
 --    Parameters:
 --        jd : Julian Day in dynamical time
 --        L : longitude in radians
@@ -121,10 +121,10 @@ end
 --
 local _lk4 = math.rad(dms_to_d(0, 0, 20.4898))
 
--- Correct for aberration; low precision, but good enough for most uses. 
---    
+-- Correct for aberration; low precision, but good enough for most uses.
+--
 --    [Meeus-1998: pg 164]
---    
+--
 --    Parameters:
 --        R : radius in au
 --
@@ -134,38 +134,38 @@ local function aberration_low(R)
     return -_lk4 / R
 end
 
---[[ 
+--[[
 Returns the rectangular coordinates of the sun, relative to the mean equinox of the day
 --]]
 local function rectangular_md(jd)
-	local L, B, R = dimension3(jd)
-	L, B = vsop_to_fk5(jd, L, B)
-	local e = obliquity_high(jd)
-	local X = R*math.cos(B)*math.cos(L)
-	local Y = R*(math.cos(B)*math.sin(L)*math.cos(e) - math.sin(B)*math.sin(e))
-	local Z = R*(math.cos(B)*math.sin(L)*math.sin(e) + math.sin(B)*math.cos(e))
-	return X, Y, Z
+    local L, B, R = dimension3(jd)
+    L, B = vsop_to_fk5(jd, L, B)
+    local e = obliquity_high(jd)
+    local X = R*math.cos(B)*math.cos(L)
+    local Y = R*(math.cos(B)*math.sin(L)*math.cos(e) - math.sin(B)*math.sin(e))
+    local Z = R*(math.cos(B)*math.sin(L)*math.sin(e) + math.sin(B)*math.cos(e))
+    return X, Y, Z
 end
 
 --[[
-	Returns the equation of time at JD
-	parameters:
-		jd: julian day in dynamic time
-		
-	Returns:
-		Equation of time in radians (2Pi radians = 24 hours)
+    Returns the equation of time at JD
+    parameters:
+        jd: julian day in dynamic time
+
+    Returns:
+        Equation of time in radians (2Pi radians = 24 hours)
 --]]
 local function equation_time(jd)
-	local tau = jd_to_jcent(jd)/10
-	local _p = {280.4664567, 360007.6982779, 0.03032028, 1/49931, -1/15300, -1/2000000}
-	local L0 = modpi2(math.rad(polynomial(_p, tau)))
-	local L, B, R = dimension3(jd)
-	
-	L, B = vsop_to_fk5(jd, L, B)	
-	epsilon    = true_obliquity(jd)
-	deltaPsi   = nut_in_lon(jd)
-	asc        = ecl_to_equ(L, B, epsilon)
-	return L0 - math.rad(0.0057183) - asc + deltaPsi*math.cos(epsilon)
+    local tau = jd_to_jcent(jd)/10
+    local _p = {280.4664567, 360007.6982779, 0.03032028, 1/49931, -1/15300, -1/2000000}
+    local L0 = modpi2(math.rad(polynomial(_p, tau)))
+    local L, B, R = dimension3(jd)
+
+    L, B = vsop_to_fk5(jd, L, B)
+    epsilon    = true_obliquity(jd)
+    deltaPsi   = nut_in_lon(jd)
+    asc        = ecl_to_equ(L, B, epsilon)
+    return L0 - math.rad(0.0057183) - asc + deltaPsi*math.cos(epsilon)
 end
 
 if astro == nil then astro = {} end
@@ -173,7 +173,7 @@ astro["sun"] = {dimension3     = dimension3,
                 dimension      = dimension,
                 aberration_low = aberration_low,
                 apparent_longitude_low = apparent_longitude_low,
-	            longitude_radius_low = longitude_radius_low,
-				rectangular_md  = rectangular_md,
-				equation_time   = equation_time}
+                longitude_radius_low = longitude_radius_low,
+                rectangular_md  = rectangular_md,
+                equation_time   = equation_time}
 return astro

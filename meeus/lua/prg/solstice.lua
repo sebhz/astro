@@ -2,7 +2,7 @@
 Usage:
 
     ./solstice.py start_year [stop_year]
-    
+
 Displays the instants of equinoxes and solstices for a range of years.
 Times are accurate to one second.
 
@@ -12,7 +12,7 @@ If one argument is given, the display is for that year.
 
 If two arguments are given, the display is for that range of
 years.
-    
+
 --]]
 
 require "astro.constants"
@@ -29,23 +29,23 @@ local equinox_approx, equinox = astro.equinox.equinox_approx, astro.equinox.equi
 local sun                     = astro.sun
 
 local function usage()
-	print("Usage:\n\t"..arg[0]..": year1 [year2]")
+    print("Usage:\n\t"..arg[0]..": year1 [year2]")
 end
 
 local start, stop
 
 if #arg < 1 then
-	usage()
-	return
+    usage()
+    return
 elseif #arg < 2 then
-	start = tonumber(arg[1])
-	stop  = start
+    start = tonumber(arg[1])
+    stop  = start
 elseif #arg < 3 then
-	start = tonumber(arg[1])
-	stop = tonumber(arg[2])
+    start = tonumber(arg[1])
+    stop = tonumber(arg[2])
 else
-	usage()
-	return
+    usage()
+    return
 end
 
 for yr = start,stop do
@@ -56,5 +56,5 @@ for yr = start,stop do
         local ut = dt_to_ut(jd)
         local lt, zone = ut_to_lt(ut)
         print("\t"..season..": "..lt_to_str(lt, zone))
-	end
+    end
 end

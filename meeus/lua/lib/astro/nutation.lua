@@ -5,7 +5,7 @@ smaller than 0.0003" have been dropped.
 
 Reference: Jean Meeus, _Astronomical Algorithms_, second edition, 1998, Willmann-Bell, Inc.
 
-The first edition of the Meeus book had some errors in the table. These may be 
+The first edition of the Meeus book had some errors in the table. These may be
 corrected in the second edition. I recall correcting my values from those
 published in _Explanatory Supplement to the Astronomical Almanac_, revised
 edition edited by P. Kenneth Seidelman, 1992
@@ -93,7 +93,7 @@ local _tbl = {
 
 --
 -- Constant terms.
--- 
+--
 local _kD  = {math.rad(297.85036), math.rad(445267.111480), math.rad(-0.0019142), math.rad( 1.0/189474)}
 local _kM  = {math.rad(357.52772), math.rad( 35999.050340), math.rad(-0.0001603), math.rad(-1.0/300000)}
 local _kM1 = {math.rad(134.96298), math.rad(477198.867398), math.rad( 0.0086972), math.rad( 1.0/ 56250)}
@@ -111,19 +111,19 @@ local function _constants(T)
 end
 
 --[[
-Return the nutation in longitude. 
-    
+Return the nutation in longitude.
+
     High precision. [Meeus-1998: pg 144]
-    
+
     Parameters:
         jd : Julian Day in dynamical time
-        
+
     Returns:
         nutation in longitude, in radians
-    
+
 --]]
 local function nut_in_lon(jd)
-    -- 
+    --
     -- Future optimization: factor the /1e5 and /1e6 adjustments into the table.
     --
     -- Could turn the loop into a generator expression. Too messy?
@@ -132,26 +132,26 @@ local function nut_in_lon(jd)
     local D, M, M1, F, omega = _constants(T)
     local deltaPsi = 0.0
     for i, v in ipairs(_tbl) do
-		local tD, tM, tM1, tF, tomega, tpsiK, tpsiT, tepsK, tepsT = unpack(v)
+        local tD, tM, tM1, tF, tomega, tpsiK, tpsiT, tepsK, tepsT = unpack(v)
         local arg = D*tD + M*tM + M1*tM1 + F*tF + omega*tomega
         deltaPsi = deltaPsi + (tpsiK/10000.0 + tpsiT/100000.0 * T) * math.sin(arg)
-	end
+    end
     return math.rad(deltaPsi/3600)
 end
 
 --[[
-Return the nutation in obliquity. 
-    
+Return the nutation in obliquity.
+
     High precision. [Meeus-1998: pg 144]
-    
+
     Parameters:
         jd : Julian Day in dynamical time
-        
+
     Returns:
         nutation in obliquity, in radians
 --]]
 local function nut_in_obl(jd)
-    -- 
+    --
     -- Future optimization: factor the /1e5 and /1e6 adjustments into the table.
     --
     -- Could turn the loop into a generator expression. Too messy?
@@ -160,34 +160,34 @@ local function nut_in_obl(jd)
     local D, M, M1, F, omega = _constants(T)
     local deltaEps = 0.0;
     for i, v in ipairs(_tbl) do
-		local tD, tM, tM1, tF, tomega, tpsiK, tpsiT, tepsK, tepsT= unpack(v)
+        local tD, tM, tM1, tF, tomega, tpsiK, tpsiT, tepsK, tepsT= unpack(v)
         local arg = D*tD + M*tM + M1*tM1 + F*tF + omega*tomega
         deltaEps = deltaEps + (tepsK/10000.0 + tepsT/100000.0 * T) * math.cos(arg)
-	end
+    end
     return math.rad(deltaEps/3600)
 end
 
 --
 -- Constant terms
--- 
-local _el0 = {math.rad(dms_to_d(23, 26,  21.448)), 
+--
+local _el0 = {math.rad(dms_to_d(23, 26,  21.448)),
         math.rad(dms_to_d( 0,  0, -46.8150)),
         math.rad(dms_to_d( 0,  0,  -0.00059)),
         math.rad(dms_to_d( 0,  0,   0.001813))}
 
  --[[
- Return the mean obliquity of the ecliptic. 
-    
+ Return the mean obliquity of the ecliptic.
+
     Low precision, but good enough for most uses. [Meeus-1998: equation 22.2].
-    
+
     Accuracy is 1" over 2000 years and 10" over 4000 years.
 
     Parameters:
         jd : Julian Day in dynamical time
-        
+
     Returns:
         obliquity, in radians
---]] 
+--]]
 local function obliquity(jd)
     local T = jd_to_jcent(jd)
     return polynomial(_el0, T)
@@ -195,7 +195,7 @@ end
 
 --
 -- Constant terms
--- 
+--
 local _el1 = {math.rad(dms_to_d(23, 26,    21.448)),
         math.rad(dms_to_d( 0,  0, -4680.93)),
         math.rad(dms_to_d( 0,  0,    -1.55)),
@@ -209,16 +209,16 @@ local _el1 = {math.rad(dms_to_d(23, 26,    21.448)),
         math.rad(dms_to_d( 0,  0,     2.45))}
 
 --[[
-Return the mean obliquity of the ecliptic. 
-    
+Return the mean obliquity of the ecliptic.
+
     High precision [Meeus-1998: equation 22.3].
-    
+
     Accuracy is 0.01" between 1000 and 3000, and "a few arc-seconds
     after 10,000 years".
-    
+
     Parameters:
         jd : Julian Day in dynamical time
-        
+
     Returns:
         obliquity, in radians
 --]]
@@ -228,33 +228,33 @@ local function obliquity_high(jd)
 end
 
 local function true_obliquity(jd)
-	return obliquity_high(jd) + nut_in_obl(jd)
+    return obliquity_high(jd) + nut_in_obl(jd)
 end
 --[[
 Return the nutation in right ascension (also called equation of the equinoxes.)
-    
+
     Meeus-1998: page 88.
-      
+
     Parameters:
         jd : Julian Day in dynamical time
-        
+
     Returns:
         nutation, in radians
 --]]
 
 local function nut_in_ra(jd)
-	local deltapsi = math.deg(nut_in_lon(jd))*3600     -- deltapsi in seconds
-	local epsilon  = true_obliquity(jd)                -- Epsilon kept in radians
-	local c = deltapsi*math.cos(epsilon)/15            -- result in seconds...
-	return (c*pi2*days_per_second)                     --.. converted in radians
+    local deltapsi = math.deg(nut_in_lon(jd))*3600     -- deltapsi in seconds
+    local epsilon  = true_obliquity(jd)                -- Epsilon kept in radians
+    local c = deltapsi*math.cos(epsilon)/15            -- result in seconds...
+    return (c*pi2*days_per_second)                     --.. converted in radians
 end
 
 if astro == nil then astro = {} end
 astro["nutation"] = {obliquity        = obliquity,
                      obliquity_high   = obliquity_high,
-					 true_obliquity   = true_obliquity,
-			         nut_in_obl       = nut_in_obl,
-			         nut_in_lon       = nut_in_lon,
-			         nut_in_ra        = nut_in_ra}
+                     true_obliquity   = true_obliquity,
+                     nut_in_obl       = nut_in_obl,
+                     nut_in_lon       = nut_in_lon,
+                     nut_in_ra        = nut_in_ra}
 return astro
-			
+

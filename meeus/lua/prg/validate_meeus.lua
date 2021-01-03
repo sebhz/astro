@@ -15,9 +15,9 @@ sizes, but are inexplicable. I speculate they may be caused by:
     2. Misprints in the book
     3. Differences in math libraries (which seems unlikely, in
         that I get the same values on different platforms)
-        
+
 Attached to the bottom of this script is the output I get.
-    
+
 Note that Meeus presents a truncated version of VSOP87d and some differences
 are to be expected when comparing results with the complete version that
 Astrolabe uses. He sometimes prints values are derived from the complete
@@ -59,12 +59,12 @@ local function report(label, computed, reference, delta, units)
         print("\t\t\tcomputed   ="..computed)
         print("\t\t\treference   ="..reference)
         print("\t\t\tdifference ="..math.abs(computed - reference).." "..units)
-	end
+    end
 end
-    
+
 function report_diff(label, computed, reference, units)
     print("\t"..label.."\tdifference: "..(computed - reference).." "..units)
-end    
+end
 
 --astro.util.load_params()
 local sun = astro.sun
@@ -137,17 +137,17 @@ mo, day = astro.calendar.day_of_year_to_cal(1988, 113)
 report("month", mo, 4, 0, "months")
 report("day", day, 22, 0, "days")
 
- tbl = { 
+ tbl = {
     {1991, 3, 31},
     {1992, 4, 19},
     {1993, 4, 11},
     {1954, 4, 18},
     {2000, 4, 23},
     {1818, 3, 22}}
-    
+
 print("8(pg 68) Gregorian Easter (6 times)")
 for i,v in pairs(tbl) do
-	yr, mo, day = unpack(v)
+    yr, mo, day = unpack(v)
     xmo, xday = astro.calendar.easter(yr)
     report("month", xmo, mo, 0, "months")
     report("day", xday, day, 0, "days")
@@ -155,7 +155,7 @@ end
 
 print("8(pg 69) Julian Easter (3 times)")
 for i, yr in ipairs({179, 711, 1243}) do
-	mo, day = astro.calendar.easter(yr, false)
+    mo, day = astro.calendar.easter(yr, false)
     report("month", mo, 4, 0, "months")
     report("day", day, 12, 0, "days")
 end
@@ -320,7 +320,7 @@ jd = astro.equinox.equinox(2437837.38589, "summer", days_per_second)
 report("julian day", jd, cal_to_jd(1962, 6, 21) + astro.util.hms_to_fday(21, 24, 42), 1e-5, "days")
 
 tbl = {
-    {1996, 
+    {1996,
         {{"spring", 20, hms_to_fday( 8,  4,  7)},
         {"summer",  21, hms_to_fday( 2, 24, 46)},
         {"autumn",  22, hms_to_fday(18,  1,  8)},
@@ -372,16 +372,16 @@ tbl = {
         {"winter",  21, hms_to_fday(18, 36, 01)}}}}
 
 months = {["spring"] = 3,  ["summer"] = 6, ["autumn"] = 9, ["winter"] = 12}
-       
+
 print("27(pg 182) Exact solstice (40 times)")
 for i, t in ipairs(tbl) do
-	local yr, s = unpack(t)
-	for j, terms in ipairs(s) do
-		local season, day, fday = unpack(terms)
-		local approx = astro.equinox.equinox_approx(yr, season)
-		local jd = astro.equinox.equinox(approx, season, days_per_second)
-		report("julian day "..yr.." "..season, jd, cal_to_jd(yr, months[season], day + fday), days_per_second, "days")
-	end
+    local yr, s = unpack(t)
+    for j, terms in ipairs(s) do
+        local season, day, fday = unpack(terms)
+        local approx = astro.equinox.equinox_approx(yr, season)
+        local jd = astro.equinox.equinox(approx, season, days_per_second)
+        report("julian day "..yr.." "..season, jd, cal_to_jd(yr, months[season], day + fday), days_per_second, "days")
+    end
 end
 
 print("28.a Equation of time")
@@ -391,28 +391,28 @@ report_diff("equation of time", 240*math.deg(E), 240*3.427351, "seconds")
 print("30 Kepler's equation")
 local million_ac = { { 0.1, 5,  5.554589 },
                      { 0.2, 5,  6.246908 },
-					 { 0.3, 5,  7.134960 },
-					 { 0.4, 5,  8.313903 },
-					 { 0.5, 5,  9.950063 },
-					 { 0.6, 5, 12.356653 },
-					 { 0.7, 5, 16.167990 },
-					 { 0.8, 5, 22.656579 },
-					 { 0.9, 5, 33.344447 },
-					 {0.99, 5, 45.361023 },
-					 {0.99, 1, 24.725822 },
-					 {0.99,33, 89.722155 } }
+                     { 0.3, 5,  7.134960 },
+                     { 0.4, 5,  8.313903 },
+                     { 0.5, 5,  9.950063 },
+                     { 0.6, 5, 12.356653 },
+                     { 0.7, 5, 16.167990 },
+                     { 0.8, 5, 22.656579 },
+                     { 0.9, 5, 33.344447 },
+                     {0.99, 5, 45.361023 },
+                     {0.99, 1, 24.725822 },
+                     {0.99,33, 89.722155 } }
 
 local milliard_ac = { { 0.99,  2, 32.3610074720 },
                       { 0.999, 6, 49.5696248539 },
-                      { 0.999, 7, 52.2702615280 } }					  
+                      { 0.999, 7, 52.2702615280 } }
 for E, M, E0 in tb_iterator(million_ac) do
-	local e0, n = astro.kepler.solve_kepler(math.rad(M), E, 1e-7)
-	report("eccentric anomaly", math.deg(e0), E0, 1e-6, "degrees")
+    local e0, n = astro.kepler.solve_kepler(math.rad(M), E, 1e-7)
+    report("eccentric anomaly", math.deg(e0), E0, 1e-6, "degrees")
 end
 
 for E, M, E0 in tb_iterator(milliard_ac) do
-	local e0, n = astro.kepler.solve_kepler(math.rad(M), E, 1e-11)
-	report("eccentric anomaly", math.deg(e0), E0, 1e-10, "degrees")
+    local e0, n = astro.kepler.solve_kepler(math.rad(M), E, 1e-11)
+    report("eccentric anomaly", math.deg(e0), E0, 1e-10, "degrees")
 end
 
 print("32.a Planet position")

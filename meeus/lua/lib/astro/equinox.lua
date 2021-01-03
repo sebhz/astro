@@ -59,26 +59,26 @@ local _terms = {
     { 12, math.rad(320.81),  math.rad( 34777.259)},
     {  9, math.rad(227.73),  math.rad(  1222.114)},
     {  8, math.rad( 15.45),  math.rad( 16859.074)}}
-    
+
 --[[
 Returns the approximate time of a solstice or equinox event.
-    
+
     The year must be in the range -1000...3000. Within that range the
     the error from the precise instant is at most 2.16 minutes.
-    
+
     Parameters:
         yr     : year
         season : one of ("spring", "summer", "autumn", "winter")
-    
+
     Returns:
         Julian Day of the event in dynamical time
-    
+
 --]]
 local function equinox_approx(yr, season)
 
     if yr < -1000 or yr > 3000 then error("year is out of range") end
-	local Y, tbl
-	
+    local Y, tbl
+
     yr = math.floor(yr)
     if yr > -1000 and yr <= 1000 then
         Y = yr / 1000.0
@@ -86,23 +86,23 @@ local function equinox_approx(yr, season)
     else
         Y = (yr - 2000) / 1000.0
         tbl = _approx_3000
-	end
-	
+    end
+
     local jd = polynomial(tbl[season], Y)
     local T = jd_to_jcent(jd)
     local W = math.rad(35999.373 * T - 2.47)
     local delta_lambda = 1 + 0.0334 * math.cos(W) + 0.0007 * math.cos(2 * W)
 
-	local S = 0
-	for i, v in ipairs(_terms) do
-		S = S + v[1] * math.cos(v[2]+v[3]*T)
-	end
-	jd = jd + 0.00001*S/delta_lambda
-	
+    local S = 0
+    for i, v in ipairs(_terms) do
+        S = S + v[1] * math.cos(v[2]+v[3]*T)
+    end
+    jd = jd + 0.00001*S/delta_lambda
+
     return jd
 end
 
-local _circle = { 
+local _circle = {
     ["spring"] = 0.0,
     ["summer"] = math.pi * 0.5,
     ["autumn"] = math.pi,
@@ -112,13 +112,13 @@ _k_sun_motion = 365.25 / pi2
 
 --[[
     Return the precise moment of an equinox or solstice event on Earth.
-    
+
     Parameters:
         jd     : Julian Day of an approximate time of the event in dynamical time
         season : one of ("spring", "summer", "autumn", "winter")
         delta  : the required precision in days. Times accurate to a second are
             reasonable when using the VSOP model.
-        
+
     Returns:
         Julian Day of the event in dynamical time
 --]]
@@ -137,10 +137,10 @@ local function equinox(jd, season, delta)
         L, B = vsop_to_fk5(jd, L, B)
         -- Meeus uses jd + 58 * sin(diff(...))
         jd = jd+diff_angle(L, circ) * _k_sun_motion
-        if math.abs(jd - jd0) < delta then 
+        if math.abs(jd - jd0) < delta then
             return jd
-		end
-	end
+        end
+    end
     error("bailout")
 end
 

@@ -50,16 +50,15 @@ local sun_rst_altitude = -0.0145438286569       -- -0.8333 degrees
 if astro == nil then astro = {} end
 astro["constants"] = { sun_rst_altitude      = sun_rst_altitude,
               standard_rst_altitude = standard_rst_altitude,
-			  km_per_au             = km_per_au,
-			  days_per_second       = days_per_second,
-			  seconds_per_day       = seconds_per_day,
-			  days_per_minute       = days_per_minute,
-			  minutes_per_day       = minutes_per_day,
-			  earth_equ_radius      = earth_equ_radius,
-			  earth_flattening      = earth_flattening,
-			  earth_pol_to_equ_radius = earth_pol_to_equ_radius,
-			  pi2                   = pi2}
+              km_per_au             = km_per_au,
+              days_per_second       = days_per_second,
+              seconds_per_day       = seconds_per_day,
+              days_per_minute       = days_per_minute,
+              minutes_per_day       = minutes_per_day,
+              earth_equ_radius      = earth_equ_radius,
+              earth_flattening      = earth_flattening,
+              earth_pol_to_equ_radius = earth_pol_to_equ_radius,
+              pi2                   = pi2}
 
 return astro
- 
-			  
+

@@ -20,49 +20,49 @@ local _planets    = vsop87d_data._planets
 --[[
 Return one of heliocentric ecliptic longitude, latitude and radius.
         [Meeus-1998: pg 218]
-        
+
         Parameters:
             jd : Julian Day in dynamical time
-            planet : must be one of ("Mercury", "Venus", "Earth", "Mars", 
+            planet : must be one of ("Mercury", "Venus", "Earth", "Mars",
                 "Jupiter", "Saturn", "Uranus", "Neptune")
             dim : must be one of "L" (longitude) or "B" (latitude) or "R" (radius)
-            
+
         Returns:
             longitude in radians, or
             latitude in radians, or
             radius in au
-        
+
         """
 --]]
 local function dimension(jd, planet, dim)
-	local X = 0.0
+    local X = 0.0
     local tauN = 1.0
     local tau = jd_to_jcent(jd) / 10.0
     local c = _planets[planet][dim]
 
     -- To do: write a proper iterator for this one
-	for i, series in ipairs(c) do
-		local seriesSum = 0
-		for j, s in ipairs(series) do
-			local A, B, C = unpack(s)
-			seriesSum = seriesSum + A*math.cos(B+C*tau)
-		end
-		X = X+seriesSum*tauN
-		tauN = tauN*tau -- last one is wasted
-	end
+    for i, series in ipairs(c) do
+        local seriesSum = 0
+        for j, s in ipairs(series) do
+            local A, B, C = unpack(s)
+            seriesSum = seriesSum + A*math.cos(B+C*tau)
+        end
+        X = X+seriesSum*tauN
+        tauN = tauN*tau -- last one is wasted
+    end
     if dim == "L" then X = modpi2(X) end
 
-	return X
+    return X
 end
-    
+
 --[[
 Return heliocentric ecliptic longitude, latitude and radius.
-        
+
         Parameters:
             jd : Julian Day in dynamical time
-            planet : must be one of ("Mercury", "Venus", "Earth", "Mars", 
+            planet : must be one of ("Mercury", "Venus", "Earth", "Mars",
                 "Jupiter", "Saturn", "Uranus", "Neptune")
-            
+
         Returns:
             longitude in radians
             latitude in radians
@@ -84,23 +84,23 @@ local _k2 = math.rad(dms_to_d(0, 0, -0.09033))
 local _k3 = math.rad(dms_to_d(0, 0,  0.03916))
 
 
---[[   
-Convert VSOP to FK5 coordinates. 
-    
-    This is required only when using the full precision of the 
+--[[
+Convert VSOP to FK5 coordinates.
+
+    This is required only when using the full precision of the
     VSOP model.
-    
+
     [Meeus-1998: pg 219]
-    
+
     Parameters:
         jd : Julian Day in dynamical time
         L : longitude in radians
         B : latitude in radians
-        
+
     Returns:
         corrected longitude in radians
         corrected latitude in radians
---]]    
+--]]
 local function vsop_to_fk5(jd, L, B)
     local T = jd_to_jcent(jd)
     local L1 = polynomial({L, _k0, _k1}, T)
@@ -113,22 +113,22 @@ end
 
 --[[
 Calculate the equatorial coordinates of a planet
-    
+
     The results will be geocentric, corrected for light-time and
     aberration.
-    
+
     Parameters:
         jd : Julian Day in dynamical time
-        planet : must be one of ("Mercury", "Venus", "Earth", "Mars", 
+        planet : must be one of ("Mercury", "Venus", "Earth", "Mars",
             "Jupiter", "Saturn", "Uranus", "Neptune")
         deltaPsi : nutation in longitude, in radians
         epsilon : True obliquity (corrected for nutation), in radians
         delta : desired accuracy, in days
-        
+
     Returns:
         right accension, in radians
         declination, in radians
---]]		
+--]]
 local function geocentric_planet(jd, planet, deltaPsi, epsilon, delta)
     local t = jd
     local l0 = -100.0 -- impossible value
@@ -136,10 +136,10 @@ local function geocentric_planet(jd, planet, deltaPsi, epsilon, delta)
     -- At most three passes through the loop always nails it.
     -- Note that we move both the Earth and the other planet during
     -- the iteration.
-	local ba, l, b
+    local ba, l, b
     for bailout = 1, 20 do
         ba = bailout
-		-- heliocentric geometric ecliptic coordinates of the Earth
+        -- heliocentric geometric ecliptic coordinates of the Earth
         local L0, B0, R0 = dimension3(t, "Earth")
 
         -- heliocentric geometric ecliptic coordinates of the planet
@@ -169,7 +169,7 @@ local function geocentric_planet(jd, planet, deltaPsi, epsilon, delta)
         -- adjust for light travel time and try again
         l0 = l
         t = jd - tau
-	end
+    end
     if ba > 19 then error("bailout") end
 
     -- transform to FK5 ecliptic and equinox
@@ -188,5 +188,5 @@ if astro == nil then astro = {} end
 astro["vsop87d"] = { vsop_to_fk5       = vsop_to_fk5,
                      geocentric_planet = geocentric_planet,
                      dimension3        = dimension3,
-					 dimension         = dimension }
+                     dimension         = dimension }
 return astro
