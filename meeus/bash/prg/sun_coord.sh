@@ -1,11 +1,12 @@
 #!/bin/bash
 #set -x
 
-ASTRO_SH_LIB_PATH="$(dirname ${BASH_SOURCE[0]})/lib"
-. $ASTRO_SH_LIB_PATH/util
-. $ASTRO_SH_LIB_PATH/datetime
+if [ -z ${ASTRO_SH_LIB_PATH+x} ]
+then
+    ASTRO_SH_LIB_PATH="$(dirname ${BASH_SOURCE[0]})/../lib"
+fi
+
 . $ASTRO_SH_LIB_PATH/coord
-. $ASTRO_SH_LIB_PATH/obliquity
 . $ASTRO_SH_LIB_PATH/sun
 
 get_sun_coord(){
