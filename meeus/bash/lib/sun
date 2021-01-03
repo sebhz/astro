@@ -1,0 +1,159 @@
+. $ASTRO_SH_LIB_PATH/util
+. $ASTRO_SH_LIB_PATH/datetime
+. $ASTRO_SH_LIB_PATH/obliquity
+
+# @Meeus 25.2
+sun_mean_longitude()
+{
+    _T=$1
+    echo "deg_reduce(280.46646 + 36000.76983*$_T + 0.0003032*$_T*$_T)" | bc -l
+}
+
+# @Meeus 25.3
+sun_mean_anomaly()
+{
+    _T=$1
+    echo "deg_reduce(357.52911 + 35999.05029*$_T + 0.0001537*$_T*$_T)" | bc -l
+}
+
+# @Meeus 25.4
+earth_orbit_eccentricity()
+{
+    _T=$1
+    echo "deg_reduce(0.016708634 - 0.000042037*$_T - 0.0000001267*$_T*$_T)" | bc -l
+}
+
+sun_center()
+{
+    _T=$1
+    _M=$2
+
+    echo "(1.914602 - 0.004817*$_T - 0.000014*$_T*$_T)*s(rad($_M)) \
+        + (0.019993 - 0.000101*$_T)*s(rad(2*$_M)) \
+        + 0.000298*s(rad(3*$_M))" | bc -l
+}
+
+# @Meeus 25.5
+sun_radius_vector()
+{
+    _v=$1
+    _ee=$2 # Earth orbit eccentricity
+    echo "1.000001018*(1 - $_ee*$_ee)/(1 + $_ee*c(rad($_v)))" | bc -l
+}
+
+sun_true_longitude()
+{
+    _T=$1
+    _L0=$(sun_mean_longitude $_T)
+    _M=$(sun_mean_anomaly $_T)
+    _C=$(sun_center $_T $_M)
+
+    echo "$_L0+$_C" | bc -l
+}
+
+sun_true_anomaly()
+{
+    _T=$1
+    _M=$(sun_mean_anomaly $_T)
+    _C=$(sun_center $_T $_M)
+
+    echo "$_M+$_C" | bc -l
+}
+
+sun_aberration_nutation_correction()
+{
+    _T=$1 # Time in Julian centuries from epoch
+    echo $(echo "125.04 - 1934.136*$_T" | bc -l)
+}
+
+sun_apparent_longitude()
+{
+    _T=$1 # Time in Julian centuries from epoch
+    _L=$2 # True longitude
+
+    _omega=$(sun_aberration_nutation_correction $_T)
+    echo "$_L-0.00569-0.00478*s(rad($_omega))" | bc -l
+}
+
+# @Meeus 25.6
+sun_right_ascension()
+{
+    _L=$1 # Sun true longitude
+    _e=$2 # Obliquity of the ecliptic
+
+    echo "deg(atan2(c(rad($_e))*s(rad($_L)), c(rad($_L))))" | bc -l
+}
+
+sun_apparent_right_ascension()
+{
+    _T=$1 # Time in Julian centuries from epoch
+    _L=$2 # Sun apparent longitude
+    _e=$3 # Obliquity of the ecliptic
+
+    _omega=$(sun_aberration_nutation_correction $_T)
+    _e_corrected=$(echo "$_e + 0.000256*c(rad($_omega))" | bc -l)
+
+    echo "deg(atan2(c(rad($_e_corrected))*s(rad($_L)), c(rad($_L))))" | bc -l
+}
+
+# @Meeus 25.7
+sun_declination()
+{
+    _L=$1 # Sun true longitude
+    _e=$2 # Obliquity of the ecliptic
+
+    echo "deg(asin(s(rad($_e))*s(rad($_L))))" | bc -l
+}
+
+sun_apparent_declination()
+{
+    _T=$1 # Time in Julian centuries from epoch
+    _L=$2 # Sun apparent longitude
+    _e=$3 # Obliquity of the ecliptic
+
+    _omega=$(sun_aberration_nutation_correction $_T)
+    _e_corrected=$(echo "$_e + 0.000256*c(rad($_omega))" | bc -l)
+
+    echo "deg(asin(s(rad($_e_corrected))*s(rad($_L))))" | bc -l
+}
+
+sun_test()
+{
+    __T=$(dt_j2000_t $(dt_jd_from_date 1992 10 13 0 0 0))
+    ut_assert $(echo "scale=9; $__T/1" | bc -l) -.072183436 "25.a-01"
+
+    __L0=$(sun_mean_longitude $__T)
+    ut_assert $(echo "scale=6; $__L0/1" | bc -l) 201.807196 "25.a-02"
+
+    __M=$(sun_mean_anomaly $__T)
+    ut_assert $(echo "scale=6; $__M/1" | bc -l) 278.993968 "25.a-03"
+
+    __ee=$(earth_orbit_eccentricity $__T)
+    ut_assert $(echo "scale=10; $__ee/1" | bc -l) .0167116677 "25.a-04"
+
+    __C=$(sun_center $__T $__M)
+    ut_assert $(echo "scale=6; $__C/1" | bc -l) -1.897315 "25.a-05"
+
+    __L=$(sun_true_longitude $__T)
+    ut_assert $(echo "scale=5; $__L/1" | bc -l) 199.90988 "25.a-06"
+
+    __v=$(sun_true_anomaly $__T)
+    __R=$(sun_radius_vector $__v $__ee)
+    ut_assert $(echo "scale=5; $__R/1" | bc -l) .99766 "25.a-07"
+
+    __lambda=$(sun_apparent_longitude $__T $__L)
+    ut_assert $(echo "scale=6; $__lambda/1" | bc -l) 199.908949 "25.a-08"
+
+    __epsilon0=$(obliquity_ecliptic_mean $__T)
+    ut_assert $(echo "scale=6; $__epsilon0/1" | bc -l) 23.440229 "25.a-09"
+
+    # Different from Meeus 25.a because we are using low accuracy method
+    __epsilon=$(obliquity_ecliptic_true $__T)
+    ut_assert $(echo "scale=3; $__epsilon/1" | bc -l) 23.439 "25.a-10"
+
+    __alpha_app=$(sun_apparent_right_ascension $__T $__lambda $__epsilon)
+    ut_assert $(echo "scale=4; $__alpha_app/1" | bc -l) -161.6191 "25.a-11"
+
+    __delta_app=$(sun_apparent_declination $__T $__lambda $__epsilon)
+    ut_assert $(echo "scale=2; $__delta_app/1" | bc -l) -7.78 "25.a-12"
+}

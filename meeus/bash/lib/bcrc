@@ -1,0 +1,64 @@
+pi=4*a(1);
+
+define dms_to_deg(d, m, s) {
+    return d+m/60+s/3600
+}
+
+define deg_reduce(x) {
+    s=scale;
+    scale=0;
+    v=x/360;
+    scale=s;
+    if (x<0)
+        return x-(v-1)*360
+    return x-v*360
+}
+
+define abs(x) {
+    if (x < 0) {
+        return -x;
+    }
+    return x;
+}
+
+define copysign(x, y) {
+    if (y >= 0)
+        return abs(x);
+    return -abs(x);
+}
+
+define rad(deg) {
+    return deg/180*pi;
+}
+
+define deg(rad) {
+    return rad/pi*180;
+}
+
+define asin(x) {
+    if (x == 1) {
+        return pi/2;
+    }
+    
+    if (x == -1) {
+        return -pi/2;
+    }
+
+    return a(x/sqrt(1-x^2));
+}
+ 
+define atan2(y, x) {
+    if (y == 0) {
+        if (x >= 0)
+            return 0;
+        return -pi;
+    }
+
+    phi=a(abs(y/x));
+    if (x > 0)
+        return copysign(phi, y);
+    if (x < 0)
+        return copysign(pi-phi, y);
+    return copysign(pi/2-phi, y);
+}
+

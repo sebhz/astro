@@ -1,0 +1,75 @@
+. $ASTRO_SH_LIB_PATH/util
+. $ASTRO_SH_LIB_PATH/datetime
+
+# @Meeus 22.2
+obliquity_ecliptic_mean()
+{
+    _TE=$1 # Careful. This is derived from Julian Ephemeris Day
+
+    echo "dms_to_deg(23,26,21.448) - dms_to_deg(0,0,46.8150)*$_TE" | bc -l
+    #echo "dms_to_deg(23,26,21.448) - dms_to_deg(0,0,46.8150)*$_TE \
+    #     -dms_to_deg(0,0,0.00059)*$_TE*$_TE + dms_to_deg(0,0,0.001813)*$_TE*$_TE*$_TE" | bc -l
+}
+
+obliquity_ecliptic_true()
+{
+    _TE=$1 # Careful. This is derived from Julian Ephemeris Day
+    _epsilon0=$(obliquity_ecliptic_mean $_TE)
+    _delta_epsilon=$(obliquity_delta_epsilon $_TE)
+
+    echo $(echo "$_epsilon0+$_delta_epsilon" | bc -l)
+}
+
+obliquity_moon_asc_node_longitude()
+{
+    _T=$1
+
+    echo "125.04452 - 1934.136261*$_T + 0.0020708*$_T*$_T + \
+          $_T*$_T*$_T/450000" | bc -l
+}
+
+obliquity_sun_mean_longitude()
+{
+    _T=$1
+
+    echo "280.4665 + 36000.7698*$_T" | bc -l
+}
+
+obliquity_moon_mean_longitude()
+{
+    _T=$1
+
+    echo "218.3165 + 481267.8813*$_T" | bc -l
+}
+
+obliquity_delta_psi()
+{
+    _T=$1
+
+    _omega=$(obliquity_moon_asc_node_longitude $_T)
+    _L=(obliquity_sun_mean_longitude $_T)
+    _Lprime=(obliquity_moon_mean_longitude $_T)
+
+    echo "dms_to_deg(0,0,-17.2)*s(rad($_omega))-dms_to_deg(0,0,1.32)*s(rad(2*$_L)) \
+        - dms_to_deg(0,0,0.23)*s(rad(2*$_Lprime))+dms_to_deg(0,0,0.21)*s(rad(2*$_omega))" | bc -l
+}
+
+obliquity_delta_epsilon()
+{
+    _T=$1
+
+    _omega=$(obliquity_moon_asc_node_longitude $_T)
+    _L=(obliquity_sun_mean_longitude $_T)
+    _Lprime=(obliquity_moon_mean_longitude $_T)
+
+    echo "dms_to_deg(0,0,9.2)*c(rad($_omega))-dms_to_deg(0,0,0.57)*c(rad(2*$_L)) \
+        - dms_to_deg(0,0,0.1)*c(rad(2*$_Lprime))+dms_to_deg(0,0,0.09)*c(rad(2*$_omega))" | bc -l
+}
+
+obliquity_test()
+{
+    __T=$(dt_j2000_t $(dt_jd_from_date 1987 04 10 0 0 0))
+    __odp=$(obliquity_delta_psi $__T)
+    __ode=$(obliquity_delta_epsilon $__T)
+}
+

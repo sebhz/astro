@@ -1,0 +1,16 @@
+shopt -s expand_aliases
+alias bc='bc $ASTRO_SH_LIB_PATH/bcrc'
+
+ut_assert()
+{
+    _v=$1
+    _e=$2
+    _n=$3
+
+    if [ $_v != $_e ]
+    then
+        echo "$_n: FAIL"
+    else
+        echo "$_n: PASS"
+    fi
+}
