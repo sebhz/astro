@@ -4,7 +4,7 @@
 # @Meeus 22.2
 obliquity_ecliptic_mean()
 {
-    _TE=$1 # Careful. This is derived from Julian Ephemeris Day
+    local _TE=$1 # Careful. This is derived from Julian Ephemeris Day
 
     echo "dms_to_deg(23,26,21.448) - dms_to_deg(0,0,46.8150)*$_TE" | bc -l
     #echo "dms_to_deg(23,26,21.448) - dms_to_deg(0,0,46.8150)*$_TE \
@@ -13,50 +13,52 @@ obliquity_ecliptic_mean()
 
 obliquity_ecliptic_true()
 {
-    _TE=$1 # Careful. This is derived from Julian Ephemeris Day
-    _epsilon0=$(obliquity_ecliptic_mean $_TE)
-    _delta_epsilon=$(obliquity_delta_epsilon $_TE)
+    local _TE=$1 # Careful. This is derived from Julian Ephemeris Day
+    local _epsilon0=$(obliquity_ecliptic_mean $_TE)
+    local _delta_epsilon=$(obliquity_delta_epsilon $_TE)
 
     echo $(echo "$_epsilon0+$_delta_epsilon" | bc -l)
 }
 
 obliquity_moon_asc_node_longitude()
 {
-    _T=$1
+    local _TE=$1 # Careful. This is derived from Julian Ephemeris Day
 
-    echo "125.04452 - 1934.136261*$_T + 0.0020708*$_T*$_T + \
-          $_T*$_T*$_T/450000" | bc -l
+    echo "125.04452 - 1934.136261*$_TE + 0.0020708*$_TE*$_TE + \
+          $_TE*$_TE*$_TE/450000" | bc -l
 }
 
 obliquity_sun_mean_longitude()
 {
-    _T=$1
+    local _TE=$1 # Careful. This is derived from Julian Ephemeris Day
 
-    echo "280.4665 + 36000.7698*$_T" | bc -l
+    echo "280.4665 + 36000.7698*$_TE" | bc -l
 }
 
 obliquity_moon_mean_longitude()
 {
-    _T=$1
+    local _TE=$1 # Careful. This is derived from Julian Ephemeris Day
 
-    echo "218.3165 + 481267.8813*$_T" | bc -l
+    echo "218.3165 + 481267.8813*$_TE" | bc -l
 }
 
+# Meeus 12
 obliquity_apparent_correction()
 {
-    _TE=$1
-    _nutation_longitude=$(obliquity_delta_psi $_TE)
-    _epsilon=$(obliquity_ecliptic_true $_TE)
+    local _TE=$1 # Careful. This is derived from Julian Ephemeris Day
+
+    local _nutation_longitude=$(obliquity_delta_psi $_TE)
+    local _epsilon=$(obliquity_ecliptic_true $_TE)
     echo $(echo "$_nutation_longitude/15*c($_epsilon)" | bc -l)
 }
 
 obliquity_delta_psi()
 {
-    _TE=$1 # Careful. This is derived from Julian Ephemeris Day
+    local _TE=$1 # Careful. This is derived from Julian Ephemeris Day
 
-    _omega=$(obliquity_moon_asc_node_longitude $_TE)
-    _L=(obliquity_sun_mean_longitude $_TE)
-    _Lprime=(obliquity_moon_mean_longitude $_TE)
+    local _omega=$(obliquity_moon_asc_node_longitude $_TE)
+    local _L=(obliquity_sun_mean_longitude $_TE)
+    local _Lprime=(obliquity_moon_mean_longitude $_TE)
 
     echo "dms_to_deg(0,0,-17.2)*s(rad($_omega))-dms_to_deg(0,0,1.32)*s(rad(2*$_L)) \
         - dms_to_deg(0,0,0.23)*s(rad(2*$_Lprime))+dms_to_deg(0,0,0.21)*s(rad(2*$_omega))" | bc -l
@@ -64,11 +66,11 @@ obliquity_delta_psi()
 
 obliquity_delta_epsilon()
 {
-    _T=$1
+    local _TE=$1 # Careful. This is derived from Julian Ephemeris Day
 
-    _omega=$(obliquity_moon_asc_node_longitude $_T)
-    _L=(obliquity_sun_mean_longitude $_T)
-    _Lprime=(obliquity_moon_mean_longitude $_T)
+    local _omega=$(obliquity_moon_asc_node_longitude $_TE)
+    local _L=(obliquity_sun_mean_longitude $_TE)
+    local _Lprime=(obliquity_moon_mean_longitude $_TE)
 
     echo "dms_to_deg(0,0,9.2)*c(rad($_omega))-dms_to_deg(0,0,0.57)*c(rad(2*$_L)) \
         - dms_to_deg(0,0,0.1)*c(rad(2*$_Lprime))+dms_to_deg(0,0,0.09)*c(rad(2*$_omega))" | bc -l
@@ -76,8 +78,8 @@ obliquity_delta_epsilon()
 
 obliquity_test()
 {
-    __T=$(dt_j2000_t $(dt_jd_from_date 1987 04 10 0 0 0))
-    __odp=$(obliquity_delta_psi $__T)
-    __ode=$(obliquity_delta_epsilon $__T)
+    local __TE=$(dt_j2000_t $(dt_jd_from_date 1987 04 10 0 0 0))
+    local __odp=$(obliquity_delta_psi $__TE)
+    local __ode=$(obliquity_delta_epsilon $__TE)
 }
 

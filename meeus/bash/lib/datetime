@@ -4,10 +4,11 @@ DT_SECS_PER_DAY=86400
 
 _hms_to_jfrac()
 {
-    _h=$1
-    _m=$2
-    _s=$3
-    _secs=$(echo "($_h*3600+$_m*60+$_s)/$DT_SECS_PER_DAY" | bc -l)
+    local _h=$1 # Hours
+    local _m=$2 # Minutes
+    local _s=$3 # Seconds
+
+    local _secs=$(echo "($_h*3600+$_m*60+$_s)/$DT_SECS_PER_DAY" | bc -l)
     echo "$_secs"
 }
 
@@ -16,35 +17,34 @@ _hms_to_jfrac()
 # Only gregorian calendar considered
 dt_jd_from_ymd()
 {
-    _Y=$1
-    _M=$2
-    _D=$3
+    local _Y=$1 # Year
+    local _M=$2 # Month
+    local _D=$3 # Day
 
     if [ $_M -lt 3 ]
     then
         _Y=$((_Y-1))
         _M=$((_M+12))
     fi
-    _A=$(echo "scale=0; $_Y/100" | bc -l)
-    _B=$(echo "scale=0; 2-$_A+$_A/4" | bc -l)
-    _JD=$(echo "s=scale; scale=0; tmp=365.25*($_Y+4716)/1+(30.6001*($_M+1))/1; scale=s;tmp+$_D+$_B-1524.5" | bc -l)
+    local _A=$(echo "scale=0; $_Y/100" | bc -l)
+    local _B=$(echo "scale=0; 2-$_A+$_A/4" | bc -l)
+    local _JD=$(echo "s=scale; scale=0; tmp=365.25*($_Y+4716)/1+(30.6001*($_M+1))/1; scale=s;tmp+$_D+$_B-1524.5" | bc -l)
     echo "$_JD"
-
 }
 
 # Return Julian day from date string (obtained by 'date +"%Y %m %d %H %M %S"')
 dt_jd_from_date()
 {
-    _jfrac=$(_hms_to_jfrac $4 $5 $6)
-    _D=$(echo "$3+$_jfrac" | bc -l)
+    local _jfrac=$(_hms_to_jfrac $4 $5 $6)
+    local _D=$(echo "$3+$_jfrac" | bc -l)
     echo $(dt_jd_from_ymd $1 $2 $_D) 
 }
 
 # Return Julian ephemeris date from date string (obtained by 'date +"%Y %m %d %H %M %S"')
 dt_jde_from_date()
 {
-    _jd=$(dt_jd_from_date $1 $2 $3 $4 $5 $6)
-    _deltaT=$(dt_get_deltat $1 $2)
+    local _jd=$(dt_jd_from_date $1 $2 $3 $4 $5 $6)
+    local _deltaT=$(dt_get_deltat $1 $2)
     echo $(echo "$_jd+$_deltaT/$DT_SECS_PER_DAY" | bc -l)
 }
 
@@ -55,9 +55,10 @@ dt_jd_current()
 }
 
 # Return time in Julian centuries since J2000 epoch
+# @ Meeus 12.1
 dt_j2000_t()
 {
-    _jd=$1
+    local _jd=$1        # Julian day
     echo "($_jd-2451545.0)/36525" | bc -l
 }
     
@@ -65,21 +66,21 @@ dt_j2000_t()
 # @Meeus 12.4
 dt_mean_sidereal_greenwich()
 {
-    _jd=$1
-    _T=$(dt_j2000_t $_jd)
+    local _jd=$1        # Julian day
+    local _T=$(dt_j2000_t $_jd)
     echo $(echo "deg_reduce(280.46061837+360.98564736629*($_jd-2451545.0) \
                + 0.000387933*$_T*$_T - $_T*$_T*$_T/38710000)" | bc -l)
 }
 
 # Get local hour angle at a given longitude of 
 # a body whose right ascension is alpha
+# @Meeus 13
 dt_get_local_hour_angle() {
-    _jd=$1
-    _longitude=$2
-    _alpha=$3
+    local _jd=$1        # Julian day
+    local _longitude=$2 # Observer's longitude
+    local _alpha=$3     # Right ascension of body
     
-    
-    _sid=$(dt_mean_sidereal_greenwich $_jd)
+    local _sid=$(dt_mean_sidereal_greenwich $_jd)
     echo "$_sid - $_longitude - $_alpha" | bc -l
 }
 
@@ -88,11 +89,11 @@ dt_get_local_hour_angle() {
 # Only implement the 2005-2050 part
 # See also Meeus, chapter 10
 dt_get_deltat() {
-    _Y=$1
-    _M=$2
+    local _Y=$1 # Year
+    local _M=$2 # Month
 
-    _y=$(echo "$_Y + ($_M - 0.5)/12" | bc -l)
-    _t=$(echo "$_y - 2000" | bc -l)
+    local _y=$(echo "$_Y + ($_M - 0.5)/12" | bc -l)
+    local _t=$(echo "$_y - 2000" | bc -l)
     echo $(echo "62.92+0.32217*$_t+0.005589*$_t*$_t" | bc -l)
 }
 
@@ -100,14 +101,14 @@ dt_get_deltat() {
 dt_test_jd()
 {
     # @Meeus 7.a
-    v=$(dt_jd_from_ymd 1957 10 4.81)
+    local v=$(dt_jd_from_ymd 1957 10 4.81)
     ut_assert $v 2436116.31 7.a
     # @Meeus 7.b - skipped because Julian
     echo "7.b: SKIP"
     # @Meeus p.62
-    v=$(dt_jd_from_ymd 2000 01 1.5)
+    local v=$(dt_jd_from_ymd 2000 01 1.5)
     ut_assert $v 2451545.0 "621"
-    v=$(dt_jd_from_ymd 1999 01 1.0)
+    local v=$(dt_jd_from_ymd 1999 01 1.0)
     ut_assert $v 2451179.5 "622"
 }
 
@@ -115,10 +116,9 @@ dt_test_jd()
 dt_test_sidereal_time()
 {
     # @Meeus 12.a
-    v=$(dt_mean_sidereal_greenwich $(dt_jd_from_date 1987 04 10 0 0 0))
+    local v=$(dt_mean_sidereal_greenwich $(dt_jd_from_date 1987 04 10 0 0 0))
     ut_assert $(echo "scale=6; $v/1" | bc -l) $(echo "scale=6;13*15 + 10*15/60 + 46.3668*15/3600" | bc -l) 12.a
     # @Meeus 12b
-    v=$(dt_mean_sidereal_greenwich $(dt_jd_from_date 1987 04 10 19 21 0))
+    local v=$(dt_mean_sidereal_greenwich $(dt_jd_from_date 1987 04 10 19 21 0))
     ut_assert $(echo "scale=6; $v/1" | bc -l) 128.737873 12.b
 }
-    

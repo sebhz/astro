@@ -1,12 +1,13 @@
 . $ASTRO_SH_LIB_PATH/util
 
+# Meeus 13.5 and 13.6
 equatorial_to_horizontal()
 {
-    _H=$1
-    _phi=$2
-    _delta=$3
+    local _H=$1     # Local hour angle
+    local _phi=$2   # Observer's latitude
+    local _delta=$3 # body declination
 
-    _A=$(echo "deg(atan2(s(rad($_H)), c(rad($_H))*s(rad($_phi)) - s(rad($_delta))/c(rad($_delta))*c(rad($_phi))))" | bc -l)
-    _h=$(echo "deg(asin(s(rad($_phi))*s(rad($_delta)) + c(rad($_phi))*c(rad($_delta))*c(rad($_H))))" | bc -l)
+    local _A=$(echo "deg(atan2(s(rad($_H)), c(rad($_H))*s(rad($_phi)) - s(rad($_delta))/c(rad($_delta))*c(rad($_phi))))" | bc -l)
+    local _h=$(echo "deg(asin(s(rad($_phi))*s(rad($_delta)) + c(rad($_phi))*c(rad($_delta))*c(rad($_H))))" | bc -l)
     echo "$_A $_h"
 }

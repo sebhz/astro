@@ -3,9 +3,9 @@ alias bc='bc $ASTRO_SH_LIB_PATH/bcrc'
 
 ut_assert()
 {
-    _v=$1
-    _e=$2
-    _n=$3
+    local _v=$1
+    local _e=$2
+    local _n=$3
 
     if [ $_v != $_e ]
     then

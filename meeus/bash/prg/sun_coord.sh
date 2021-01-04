@@ -10,31 +10,32 @@ fi
 . $ASTRO_SH_LIB_PATH/sun
 
 get_sun_coord(){
-    __latitude=$2
-    __longitude=$3
+    local _latitude=$2
+    local _longitude=$3
 
     # Sun coordinates computations work with Julian Ephemeris Day (DT) as base...
-    __JDE=$(dt_jde_from_date $1)
-    __TE=$(dt_j2000_t $__JDE)
-    __L=$(sun_true_longitude $__TE)
-    __lambda=$(sun_apparent_longitude $__TE $__L)
-    __epsilon=$(obliquity_ecliptic_true $__TE)
+    local _JDE=$(dt_jde_from_date $1)
+    local _TE=$(dt_j2000_t $_JDE)
+    local _L=$(sun_true_longitude $_TE)
+    local _lambda=$(sun_apparent_longitude $_TE $_L)
+    local _epsilon=$(obliquity_ecliptic_true $_TE)
     # RA and decl are mostly constant over the course of a day but let's be precise :-)
-    __right_ascension=$(sun_apparent_right_ascension $__TE $__lambda $__epsilon)
-    __declination=$(sun_apparent_declination $__TE $__lambda $__epsilon)
+    local _right_ascension=$(sun_apparent_right_ascension $_TE $_lambda $_epsilon)
+    local _declination=$(sun_apparent_declination $_TE $_lambda $_epsilon)
 
     # ...but hour angle must be computed from Julian Day (UT)
-    __JD=$(dt_jd_from_date $1)
-    __H=$(dt_get_local_hour_angle $__JD $__longitude $__right_ascension)
+    local _JD=$(dt_jd_from_date $1)
+    local _H=$(dt_get_local_hour_angle $_JD $_longitude $_right_ascension)
     # This is hour angle computed from mean sidereal time - correct it to get apparent sidereal time
-    __obliquity_correction=$(obliquity_apparent_correction $__TE)
-    __apparent_hour_angle=$(echo "$__obliquity_correction + $__H" | bc -l)
-    __horizontal_coord=$(equatorial_to_horizontal $__apparent_hour_angle $__latitude $__declination)
-    __AZIMUTH=$(echo $__horizontal_coord | cut -d' ' -f1)
-    __ALTITUDE=$(echo $__horizontal_coord | cut -d' ' -f2)
-    echo -n $(echo "scale=2; $__ALTITUDE/1" | bc -l)
+    local _obliquity_correction=$(obliquity_apparent_correction $_TE)
+    local _apparent_hour_angle=$(echo "$_obliquity_correction + $_H" | bc -l)
+    local _horizontal_coord=$(equatorial_to_horizontal $_apparent_hour_angle $_latitude $_declination)
+    local _AZIMUTH=$(echo $_horizontal_coord | cut -d' ' -f1)
+    local _ALTITUDE=$(echo $_horizontal_coord | cut -d' ' -f2)
+
+    echo -n $(echo "scale=2; $_ALTITUDE/1" | bc -l)
     echo -n ","
-    echo $(echo "scale=2; $__AZIMUTH/1" | bc -l)
+    echo $(echo "scale=2; $_AZIMUTH/1" | bc -l)
 }
 
 lat=$1
