@@ -1,3 +1,6 @@
+if [ -z ${__ASTRO_DATETIME__+x} ]; then
+__ASTRO_DATETIME__=""
+
 . $ASTRO_SH_LIB_PATH/util
 
 DT_SECS_PER_DAY=86400
@@ -120,3 +123,5 @@ dt_test_sidereal_time()
     local v=$(dt_mean_sidereal_greenwich $(dt_jd_from_date 1987 04 10 19 21 0))
     ut_assert $(echo "scale=6; $v/1" | bc -l) 128.737873 12.b
 }
+
+fi

@@ -1,3 +1,6 @@
+if [ -z ${__ASTRO_COORD__+x} ]; then
+__ASTRO_COORD__=""
+
 . $ASTRO_SH_LIB_PATH/util
 
 # Meeus 13.5 and 13.6
@@ -11,3 +14,5 @@ equatorial_to_horizontal()
     local _h=$(bc -l <<< "deg(asin(s(rad($_phi))*s(rad($_delta)) + c(rad($_phi))*c(rad($_delta))*c(rad($_H))))")
     echo "$_A $_h"
 }
+
+fi

@@ -1,3 +1,6 @@
+if [ -z ${__ASTRO_SUN__+o} ]; then
+__ASTRO_SUN__=""
+
 . $ASTRO_SH_LIB_PATH/util
 . $ASTRO_SH_LIB_PATH/datetime
 . $ASTRO_SH_LIB_PATH/obliquity
@@ -159,3 +162,5 @@ sun_test()
     local _delta_app=$(sun_apparent_declination $_T $_lambda $_epsilon)
     ut_assert $(bc -l <<< "scale=2; $_delta_app/1") -7.78 "25.a-12"
 }
+
+fi

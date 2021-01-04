@@ -1,3 +1,6 @@
+if [ -z ${__ASTRO_OBLIQUITY__+o} ]; then
+__ASTRO_OBLIQUITY__=""
+
 . $ASTRO_SH_LIB_PATH/util
 . $ASTRO_SH_LIB_PATH/datetime
 
@@ -83,3 +86,4 @@ obliquity_test()
     local __ode=$(obliquity_delta_epsilon $__TE)
 }
 
+fi

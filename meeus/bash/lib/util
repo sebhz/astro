@@ -1,3 +1,6 @@
+if [ -z ${__ASTRO_UTIL__+x} ]; then
+__ASTRO_UTIL__=""
+
 shopt -s expand_aliases
 alias bc='bc $ASTRO_SH_LIB_PATH/bcrc'
 
@@ -14,3 +17,5 @@ ut_assert()
         echo "$_n: PASS"
     fi
 }
+
+fi
