@@ -28,14 +28,14 @@ get_sun_coord(){
     local _H=$(dt_get_local_hour_angle $_JD $_longitude $_right_ascension)
     # This is hour angle computed from mean sidereal time - correct it to get apparent sidereal time
     local _obliquity_correction=$(obliquity_apparent_correction $_TE)
-    local _apparent_hour_angle=$(echo "$_obliquity_correction + $_H" | bc -l)
+    local _apparent_hour_angle=$(bc -l <<< "$_obliquity_correction + $_H")
     local _horizontal_coord=$(equatorial_to_horizontal $_apparent_hour_angle $_latitude $_declination)
     local _AZIMUTH=$(echo $_horizontal_coord | cut -d' ' -f1)
     local _ALTITUDE=$(echo $_horizontal_coord | cut -d' ' -f2)
 
-    echo -n $(echo "scale=2; $_ALTITUDE/1" | bc -l)
+    echo -n $(bc -l <<< "scale=2; $_ALTITUDE/1")
     echo -n ","
-    echo $(echo "scale=2; $_AZIMUTH/1" | bc -l)
+    bc -l <<< "scale=2; $_AZIMUTH/1"
 }
 
 lat=$1

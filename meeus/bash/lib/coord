@@ -7,7 +7,7 @@ equatorial_to_horizontal()
     local _phi=$2   # Observer's latitude
     local _delta=$3 # body declination
 
-    local _A=$(echo "deg(atan2(s(rad($_H)), c(rad($_H))*s(rad($_phi)) - s(rad($_delta))/c(rad($_delta))*c(rad($_phi))))" | bc -l)
-    local _h=$(echo "deg(asin(s(rad($_phi))*s(rad($_delta)) + c(rad($_phi))*c(rad($_delta))*c(rad($_H))))" | bc -l)
+    local _A=$(bc -l <<< "deg(atan2(s(rad($_H)), c(rad($_H))*s(rad($_phi)) - s(rad($_delta))/c(rad($_delta))*c(rad($_phi))))")
+    local _h=$(bc -l <<< "deg(asin(s(rad($_phi))*s(rad($_delta)) + c(rad($_phi))*c(rad($_delta))*c(rad($_H))))")
     echo "$_A $_h"
 }

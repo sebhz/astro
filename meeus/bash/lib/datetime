@@ -8,8 +8,7 @@ _hms_to_jfrac()
     local _m=$2 # Minutes
     local _s=$3 # Seconds
 
-    local _secs=$(echo "($_h*3600+$_m*60+$_s)/$DT_SECS_PER_DAY" | bc -l)
-    echo "$_secs"
+    bc -l <<< "($_h*3600+$_m*60+$_s)/$DT_SECS_PER_DAY"
 }
 
 # Return Julian day from Y,M,D (D is decimal)
@@ -26,17 +25,16 @@ dt_jd_from_ymd()
         _Y=$((_Y-1))
         _M=$((_M+12))
     fi
-    local _A=$(echo "scale=0; $_Y/100" | bc -l)
-    local _B=$(echo "scale=0; 2-$_A+$_A/4" | bc -l)
-    local _JD=$(echo "s=scale; scale=0; tmp=365.25*($_Y+4716)/1+(30.6001*($_M+1))/1; scale=s;tmp+$_D+$_B-1524.5" | bc -l)
-    echo "$_JD"
+    local _A=$(bc -l <<< "scale=0; $_Y/100")
+    local _B=$(bc -l <<< "scale=0; 2-$_A+$_A/4")
+    bc -l <<< "s=scale; scale=0; tmp=365.25*($_Y+4716)/1+(30.6001*($_M+1))/1; scale=s;tmp+$_D+$_B-1524.5"
 }
 
 # Return Julian day from date string (obtained by 'date +"%Y %m %d %H %M %S"')
 dt_jd_from_date()
 {
     local _jfrac=$(_hms_to_jfrac $4 $5 $6)
-    local _D=$(echo "$3+$_jfrac" | bc -l)
+    local _D=$(bc -l <<< "$3+$_jfrac")
     echo $(dt_jd_from_ymd $1 $2 $_D) 
 }
 
@@ -45,7 +43,7 @@ dt_jde_from_date()
 {
     local _jd=$(dt_jd_from_date $1 $2 $3 $4 $5 $6)
     local _deltaT=$(dt_get_deltat $1 $2)
-    echo $(echo "$_jd+$_deltaT/$DT_SECS_PER_DAY" | bc -l)
+    bc -l <<< "$_jd+$_deltaT/$DT_SECS_PER_DAY"
 }
 
 # Return current Julian date
@@ -59,7 +57,7 @@ dt_jd_current()
 dt_j2000_t()
 {
     local _jd=$1        # Julian day
-    echo "($_jd-2451545.0)/36525" | bc -l
+    bc -l <<< "($_jd-2451545.0)/36525"
 }
     
 # Return mean sidereal time at greenwich
@@ -68,8 +66,8 @@ dt_mean_sidereal_greenwich()
 {
     local _jd=$1        # Julian day
     local _T=$(dt_j2000_t $_jd)
-    echo $(echo "deg_reduce(280.46061837+360.98564736629*($_jd-2451545.0) \
-               + 0.000387933*$_T*$_T - $_T*$_T*$_T/38710000)" | bc -l)
+    bc -l <<< "deg_reduce(280.46061837+360.98564736629*($_jd-2451545.0) \
+               + 0.000387933*$_T*$_T - $_T*$_T*$_T/38710000)"
 }
 
 # Get local hour angle at a given longitude of 
@@ -81,7 +79,7 @@ dt_get_local_hour_angle() {
     local _alpha=$3     # Right ascension of body
     
     local _sid=$(dt_mean_sidereal_greenwich $_jd)
-    echo "$_sid - $_longitude - $_alpha" | bc -l
+    bc -l <<< "$_sid - $_longitude - $_alpha"
 }
 
 # Get deltaT (difference between UT and DT)
@@ -94,7 +92,7 @@ dt_get_deltat() {
 
     local _y=$(echo "$_Y + ($_M - 0.5)/12" | bc -l)
     local _t=$(echo "$_y - 2000" | bc -l)
-    echo $(echo "62.92+0.32217*$_t+0.005589*$_t*$_t" | bc -l)
+    bc -l <<< "62.92+0.32217*$_t+0.005589*$_t*$_t"
 }
 
 # Test jd

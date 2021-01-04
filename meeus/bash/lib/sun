@@ -6,21 +6,21 @@
 sun_mean_longitude()
 {
     local _TE=$1 # Julian centuries of 36525 ephemeris days from J2000. Derived from Julian Ephemeris day
-    echo "deg_reduce(280.46646 + 36000.76983*$_TE + 0.0003032*$_TE*$_TE)" | bc -l
+    bc -l <<< "deg_reduce(280.46646 + 36000.76983*$_TE + 0.0003032*$_TE*$_TE)"
 }
 
 # @Meeus 25.3
 sun_mean_anomaly()
 {
     local _TE=$1 # Julian centuries of 36525 ephemeris days from J2000. Derived from Julian Ephemeris day
-    echo "deg_reduce(357.52911 + 35999.05029*$_TE + 0.0001537*$_TE*$_TE)" | bc -l
+    bc -l <<< "deg_reduce(357.52911 + 35999.05029*$_TE + 0.0001537*$_TE*$_TE)"
 }
 
 # @Meeus 25.4
 earth_orbit_eccentricity()
 {
     local _TE=$1 # Julian centuries of 36525 ephemeris days from J2000. Derived from Julian Ephemeris day
-    echo "deg_reduce(0.016708634 - 0.000042037*$_TE - 0.0000001267*$_TE*$_TE)" | bc -l
+    bc -l <<< "deg_reduce(0.016708634 - 0.000042037*$_TE - 0.0000001267*$_TE*$_TE)"
 }
 
 sun_center()
@@ -28,9 +28,9 @@ sun_center()
     local _TE=$1 # Julian centuries of 36525 ephemeris days from J2000. Derived from Julian Ephemeris day
     local _M=$2  # Mean anomaly of the sun
 
-    echo "(1.914602 - 0.004817*$_TE - 0.000014*$_TE*$_TE)*s(rad($_M)) \
-        + (0.019993 - 0.000101*$_TE)*s(rad(2*$_M)) \
-        + 0.000298*s(rad(3*$_M))" | bc -l
+    bc -l <<< "(1.914602 - 0.004817*$_TE - 0.000014*$_TE*$_TE)*s(rad($_M)) \
+             + (0.019993 - 0.000101*$_TE)*s(rad(2*$_M)) \
+             + 0.000298*s(rad(3*$_M))"
 }
 
 # @Meeus 25.5
@@ -39,7 +39,7 @@ sun_radius_vector()
 {
     local _v=$1  # Sun true anomaly
     local _ee=$2 # Earth orbit eccentricity
-    echo "1.000001018*(1 - $_ee*$_ee)/(1 + $_ee*c(rad($_v)))" | bc -l
+    bc -l <<< "1.000001018*(1 - $_ee*$_ee)/(1 + $_ee*c(rad($_v)))"
 }
 
 # Sun true geometric longitude
@@ -50,7 +50,7 @@ sun_true_longitude()
     local _M=$(sun_mean_anomaly $_TE)
     local _C=$(sun_center $_TE $_M)
 
-    echo "$_L0+$_C" | bc -l
+    bc -l <<< "$_L0+$_C"
 }
 
 sun_true_anomaly()
@@ -59,13 +59,13 @@ sun_true_anomaly()
     local _M=$(sun_mean_anomaly $_TE)
     local _C=$(sun_center $_TE $_M)
 
-    echo "$_M+$_C" | bc -l
+    bc -l <<< "$_M+$_C"
 }
 
 sun_aberration_nutation_correction()
 {
     local _TE=$1 # Julian centuries of 36525 ephemeris days from J2000. Derived from Julian Ephemeris day
-    echo $(echo "125.04 - 1934.136*$_TE" | bc -l)
+    bc -l <<< "125.04 - 1934.136*$_TE"
 }
 
 sun_apparent_longitude()
@@ -74,7 +74,7 @@ sun_apparent_longitude()
     local _L=$2  # Sun true geometric longitude
 
     local _omega=$(sun_aberration_nutation_correction $_TE)
-    echo "$_L-0.00569-0.00478*s(rad($_omega))" | bc -l
+    bc -l <<< "$_L-0.00569-0.00478*s(rad($_omega))"
 }
 
 # @Meeus 25.6
@@ -83,7 +83,7 @@ sun_right_ascension()
     local _L=$1 # Sun true longitude
     local _e=$2 # Obliquity of the ecliptic
 
-    echo "deg(atan2(c(rad($_e))*s(rad($_L)), c(rad($_L))))" | bc -l
+    bc -l <<< "deg(atan2(c(rad($_e))*s(rad($_L)), c(rad($_L))))"
 }
 
 sun_apparent_right_ascension()
@@ -95,7 +95,7 @@ sun_apparent_right_ascension()
     local _omega=$(sun_aberration_nutation_correction $_TE)
     local _e_corrected=$(echo "$_e + 0.000256*c(rad($_omega))" | bc -l)
 
-    echo "deg(atan2(c(rad($_e_corrected))*s(rad($_L)), c(rad($_L))))" | bc -l
+    bc -l <<< "deg(atan2(c(rad($_e_corrected))*s(rad($_L)), c(rad($_L))))"
 }
 
 # @Meeus 25.7
@@ -104,7 +104,7 @@ sun_declination()
     local _L=$1 # Sun true longitude
     local _e=$2 # Obliquity of the ecliptic
 
-    echo "deg(asin(s(rad($_e))*s(rad($_L))))" | bc -l
+    bc -l <<< "deg(asin(s(rad($_e))*s(rad($_L))))"
 }
 
 sun_apparent_declination()
@@ -116,46 +116,46 @@ sun_apparent_declination()
     local _omega=$(sun_aberration_nutation_correction $_TE)
     local _e_corrected=$(echo "$_e + 0.000256*c(rad($_omega))" | bc -l)
 
-    echo "deg(asin(s(rad($_e_corrected))*s(rad($_L))))" | bc -l
+    bc -l <<< "deg(asin(s(rad($_e_corrected))*s(rad($_L))))"
 }
 
 sun_test()
 {
     local _T=$(dt_j2000_t $(dt_jd_from_date 1992 10 13 0 0 0))
-    ut_assert $(echo "scale=9; $_T/1" | bc -l) -.072183436 "25.a-01"
+    ut_assert $(bc -l <<< "scale=9; $_T/1") -.072183436 "25.a-01"
 
     local _L0=$(sun_mean_longitude $_T)
-    ut_assert $(echo "scale=6; $_L0/1" | bc -l) 201.807196 "25.a-02"
+    ut_assert $(bc -l <<< "scale=6; $_L0/1") 201.807196 "25.a-02"
 
     local _M=$(sun_mean_anomaly $_T)
-    ut_assert $(echo "scale=6; $_M/1" | bc -l) 278.993968 "25.a-03"
+    ut_assert $(bc -l <<< "scale=6; $_M/1") 278.993968 "25.a-03"
 
     local _ee=$(earth_orbit_eccentricity $_T)
-    ut_assert $(echo "scale=10; $_ee/1" | bc -l) .0167116677 "25.a-04"
+    ut_assert $(bc -l <<< "scale=10; $_ee/1") .0167116677 "25.a-04"
 
     local _C=$(sun_center $_T $_M)
-    ut_assert $(echo "scale=6; $_C/1" | bc -l) -1.897315 "25.a-05"
+    ut_assert $(bc -l <<< "scale=6; $_C/1") -1.897315 "25.a-05"
 
     local _L=$(sun_true_longitude $_T)
-    ut_assert $(echo "scale=5; $_L/1" | bc -l) 199.90988 "25.a-06"
+    ut_assert $(bc -l <<< "scale=5; $_L/1") 199.90988 "25.a-06"
 
     local _v=$(sun_true_anomaly $_T)
     local _R=$(sun_radius_vector $_v $_ee)
-    ut_assert $(echo "scale=5; $_R/1" | bc -l) .99766 "25.a-07"
+    ut_assert $(bc -l <<< "scale=5; $_R/1") .99766 "25.a-07"
 
     local _lambda=$(sun_apparent_longitude $_T $_L)
-    ut_assert $(echo "scale=6; $_lambda/1" | bc -l) 199.908949 "25.a-08"
+    ut_assert $(bc -l <<< "scale=6; $_lambda/1") 199.908949 "25.a-08"
 
     local _epsilon0=$(obliquity_ecliptic_mean $_T)
-    ut_assert $(echo "scale=6; $_epsilon0/1" | bc -l) 23.440229 "25.a-09"
+    ut_assert $(bc -l <<< "scale=6; $_epsilon0/1") 23.440229 "25.a-09"
 
     # Different from Meeus 25.a because we are using low accuracy method
     local _epsilon=$(obliquity_ecliptic_true $_T)
-    ut_assert $(echo "scale=3; $_epsilon/1" | bc -l) 23.439 "25.a-10"
+    ut_assert $(bc -l <<< "scale=3; $_epsilon/1") 23.439 "25.a-10"
 
     local_alpha_app=$(sun_apparent_right_ascension $_T $_lambda $_epsilon)
-    ut_assert $(echo "scale=4; $_alpha_app/1" | bc -l) -161.6191 "25.a-11"
+    ut_assert $(bc -l <<< "scale=4; $_alpha_app/1") -161.6191 "25.a-11"
 
     local _delta_app=$(sun_apparent_declination $_T $_lambda $_epsilon)
-    ut_assert $(echo "scale=2; $_delta_app/1" | bc -l) -7.78 "25.a-12"
+    ut_assert $(bc -l <<< "scale=2; $_delta_app/1") -7.78 "25.a-12"
 }
