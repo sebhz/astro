@@ -35,6 +35,10 @@ define deg(rad) {
     return rad/pi*180;
 }
 
+define t(x) {
+    return s(x)/c(x);
+}
+
 define asin(x) {
     if (x == 1) {
         return pi/2;

@@ -1,5 +1,5 @@
 #!/bin/bash
-# set -x
+#set -x
 
 if [ -z ${ASTRO_SH_LIB_PATH+x} ]
 then
@@ -8,6 +8,7 @@ fi
 
 . $ASTRO_SH_LIB_PATH/coord
 . $ASTRO_SH_LIB_PATH/sun
+. $ASTRO_SH_LIB_PATH/refraction
 
 get_sun_coord(){
     local _latitude=$2
@@ -31,7 +32,9 @@ get_sun_coord(){
     local _apparent_hour_angle=$(bc -l <<< "$_obliquity_correction + $_H")
     local _horizontal_coord=$(equatorial_to_horizontal $_apparent_hour_angle $_latitude $_declination)
     local _AZIMUTH=$(echo $_horizontal_coord | cut -d' ' -f1)
-    local _ALTITUDE=$(echo $_horizontal_coord | cut -d' ' -f2)
+    local _TRUE_ALTITUDE=$(echo $_horizontal_coord | cut -d' ' -f2)
+    # And correct altitude for atmospheric refraction
+    local _ALTITUDE=$(bc -l <<< "$_TRUE_ALTITUDE + $(refraction $_TRUE_ALTITUDE)")
 
     echo -n $(bc -l <<< "scale=2; $_ALTITUDE/1")
     echo -n ","
