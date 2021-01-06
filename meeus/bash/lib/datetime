@@ -75,6 +75,8 @@ dt_mean_sidereal_greenwich()
 
 # Get local hour angle at a given longitude of 
 # a body whose right ascension is alpha
+# WARNING: longitudes in this formula must be positive towards west and
+# negative towards east. See Meeus rant about this in chapter 13.
 # @Meeus 13
 dt_get_local_hour_angle() {
     local _jd=$1        # Julian day

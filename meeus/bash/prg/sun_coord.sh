@@ -42,6 +42,8 @@ get_sun_coord(){
 }
 
 lat=$1
+# Beware ! Longitudes are positive towards west and negative towards east
+# Contrarily to the standard.
 long=$2
 get_sun_coord "$(date -u +"%Y %m %d %H %M %S")" $lat $long
 
