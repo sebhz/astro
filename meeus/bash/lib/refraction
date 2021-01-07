@@ -1,3 +1,6 @@
+if [ -z ${__ASTRO_REFRAC__+x} ]; then
+__ASTRO_REFRAC__=""
+
 # Refraction coef to be added to computed altitude
 # @Meeus 16.4 - Saedmundsson equation corrected to give R=0 for h=90 degree
 refraction()
@@ -6,3 +9,5 @@ refraction()
 
     bc -l <<< "(1.02/t(rad($_h + 10.3/($_h + 5.11))) + 0.0019279)/60"
 }
+
+fi
