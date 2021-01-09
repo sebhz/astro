@@ -17,7 +17,6 @@ local lt_to_str                    = astro.calendar.lt_to_str
 local is_leap_year                 = astro.calendar.is_leap_year
 local day_of_year_to_cal           = astro.calendar.day_of_year_to_cal
 local cal_to_day_of_year           = astro.calendar.cal_to_day_of_year
-local ut_to_lt                     = astro.calendar.ut_to_lt
 local dt_to_ut                     = astro.dynamical.dt_to_ut
 local lunation                     = astro.moon.lunation
 local moon_phase                   = astro.moon.moon_phase

@@ -552,32 +552,8 @@ local function lt_to_str(jd, zone, level)
     error("Unknown time level = "..level)
 end
 
---[[
-Convert universal time in Julian Days to a local time.
-
-    Include Daylight Savings Time offset, if any.
-
-    Parameters:
-        jd : Julian Day number, universal time
-
-    Return:
-        Julian Day number, local time
-        zone string of the zone used for the conversion
---]]
-local function ut_to_lt(jd)
-    local zone, offset
-    if is_dst(jd) then
-        zone   = astro.globals.daylight_timezone_name
-        offset = astro.globals.daylight_timezone_offset
-    else
-        zone   = astro.globals.standard_timezone_name
-        offset = astro.globals.standard_timezone_offset
-    end
-    return jd - offset/24, zone
-end
-
 if astro == nil then astro = {} end
-astro["calendar"] = {ut_to_lt                = ut_to_lt,
+astro["calendar"] = {
             lt_to_str               = lt_to_str,
             get_current_jd          = get_current_jd,
             jd_to_jcent             = jd_to_jcent,

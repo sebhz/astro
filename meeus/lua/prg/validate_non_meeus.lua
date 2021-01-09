@@ -7,7 +7,6 @@ require "astro.locations"
 local cal_to_jd       = astro.calendar.cal_to_jd
 local jd_to_cal       = astro.calendar.jd_to_cal
 local jd_to_date       = astro.calendar.jd_to_date
-local ut_to_lt        = astro.calendar.ut_to_lt
 local fday_to_hms     = astro.util.fday_to_hms
 local set_location    = astro.locations.set_location
 
@@ -47,10 +46,6 @@ report("angle", d, 277.5, 0, "degrees")
 print("Moon rise and set")
 set_location("Paris", "France")
 r, s = astro.moon.riseset(cal_to_jd(2009, 6 , 7))
-y, m, d, h, mn, sec = jd_to_date(ut_to_lt(s))
---print(y, m, d, h, mn, math.floor(sec))
-y, m, d, h, mn, sec = jd_to_date(ut_to_lt(r))
---print(y, m, d, h, mn, math.floor(sec))
 
 report("rise", r, 2454990.3398684, 1e-7, "JD")
 report("set",  s, 2454989.6255844, 1e-7, "JD")

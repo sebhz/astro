@@ -7,7 +7,6 @@ local lunation   = astro.moon.lunation
 local jd_to_cal  = astro.calendar.jd_to_cal
 local cal_to_jd  = astro.calendar.cal_to_jd
 local lt_to_str  = astro.calendar.lt_to_str
-local ut_to_lt   = astro.calendar.ut_to_lt
 local dt_to_ut   = astro.dynamical.dt_to_ut
 local fday_to_hms = astro.util.fday_to_hms
 
@@ -28,20 +27,16 @@ repeat
     local l  = lunation(jdnew)
     local jdsave = jdnew
 
-    local lt, zone = ut_to_lt(dt_to_ut(jdnew), "minute")
-    local nt = lt_to_str(lt, zone, "minute")
+    local nt = lt_to_str(dt_to_ut(jdnew, "", "minute"))
 
     jdnew = moon_phase(jdnew+7, 1)
-    lt, zone = ut_to_lt(dt_to_ut(jdnew), "minute")
-    local qt = lt_to_str(lt, zone, "minute")
+    local qt = lt_to_str(dt_to_ut(jdnew, "", "minute"))
 
     jdnew = moon_phase(jdnew+7, 2)
-    lt, zone = ut_to_lt(dt_to_ut(jdnew), "minute")
-    local ft = lt_to_str(lt, zone, "minute")
+    local ft = lt_to_str(dt_to_ut(jdnew, "", "minute"))
 
     jdnew = moon_phase(jdnew+7, 3)
-    lt, zone = ut_to_lt(dt_to_ut(jdnew), "minute")
-    local qqt = lt_to_str(lt, zone, "minute")
+    local qqt = lt_to_str(dt_to_ut(jdnew, "", "minute"))
 
     jdnew = moon_phase(jdnew+7, 0)
 

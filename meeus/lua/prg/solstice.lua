@@ -23,7 +23,7 @@ require "astro.sun"
 require "astro.globals"
 
 local days_per_second     = astro.constants.days_per_second
-local ut_to_lt, lt_to_str = astro.calendar.ut_to_lt, astro.calendar.lt_to_str
+local lt_to_str           = astro.calendar.lt_to_str
 local dt_to_ut            = astro.dynamical.dt_to_ut
 local equinox_approx, equinox = astro.equinox.equinox_approx, astro.equinox.equinox
 local sun                     = astro.sun
@@ -54,7 +54,6 @@ for yr = start,stop do
         local approx_jd = equinox_approx(yr, season)
         local jd = equinox(approx_jd, season, days_per_second)
         local ut = dt_to_ut(jd)
-        local lt, zone = ut_to_lt(ut)
-        print("\t"..season..": "..lt_to_str(lt, zone))
+        print("\t"..season..": "..lt_to_str(ut))
     end
 end

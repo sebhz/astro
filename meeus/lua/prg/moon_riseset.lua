@@ -20,7 +20,6 @@ local jd_to_cal                    = astro.calendar.jd_to_cal
 local lt_to_str                    = astro.calendar.lt_to_str
 local is_leap_year                 = astro.calendar.is_leap_year
 local day_of_year_to_cal           = astro.calendar.day_of_year_to_cal
-local ut_to_lt                     = astro.calendar.ut_to_lt
 local dt_to_ut                     = astro.dynamical.dt_to_ut
 local round                        = astro.util.round
 
@@ -78,14 +77,12 @@ end
 
 local function report_riseset(rise, set, k)
     if rise then
-        local lt, zone = ut_to_lt(rise)
-        print("Rise: "..lt_to_str(lt, zone, "minute"))
+        print("Rise: "..lt_to_str(rise, "", "minute"))
     else
         print("Moon did not rise this day")
     end
     if set then
-        local lt, zone = ut_to_lt(set)
-        print("Set : "..lt_to_str(lt, zone, "minute"))
+        print("Set : "..lt_to_str(set, "", "minute"))
     else
         print("Moon did not set this day")
     end
@@ -160,16 +157,18 @@ for d=1,nd do
     local h = altitude(jd)
     local direction = "rising"
     if h < hold then direction = "falling" end
-    print(math.deg(h))
+--    print(d)
+--    print(math.deg(h))
     hold = h
 end
 
-while true do end
+--while true do end
 print("Quadratic extrapolation")
 local x = os.clock()
 for d=1,nd do
     local jd = cal_to_jd(yr, day_of_year_to_cal(yr, d))
     riseset_quadratic(jd)
+    print(d)
 end
 local y = os.clock()
 print(string.format("Used CPU time: %.2f seconds\n", y - x))
@@ -179,6 +178,7 @@ print("Linear extrapolation")
 for d=1,nd do
     local jd = cal_to_jd(yr, day_of_year_to_cal(yr, d))
     riseset_linear(jd)
+    print(d)
 end
 y = os.clock()
 print(string.format("Used CPU time: %.2f seconds\n", y - x))
@@ -195,5 +195,6 @@ for d=1,nd do
 
     if dr > 0 then kr=kr+1 end
     if ds > 0 then ks=ks+1 end
+    print(d)
 end
 print(kr .. " rise difference(s) / " .. ks .. " set difference(s) detected")
