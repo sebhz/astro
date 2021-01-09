@@ -1,5 +1,6 @@
 require "astro.constants"
 require "astro.util"
+require "astro.globals"
 require "astro.calendar"
 require "astro.dynamical"
 require "astro.vsop87d"
@@ -18,6 +19,19 @@ local true_obliquity            = astro.nutation.true_obliquity
 local ecl_to_equ                = astro.coordinates.ecl_to_equ
 local equ_to_horiz              = astro.coordinates.equ_to_horiz
 local get_hour_angle            = astro.coordinates.get_hour_angle
+
+local function usage()
+    print("Usage:\n\t"..arg[0]..": lat long")
+    print("\t\t latitude and longitude in degrees. Longitude negative eastward")
+end
+
+if #arg ~= 2 then
+    usage()
+    return
+end
+
+astro.globals.latitude=math.rad(tonumber(arg[1]))
+astro.globals.longitude=math.rad(tonumber(arg[2]))
 
 local jd=get_current_jd()
 local jde=ut_to_dt(jd)
