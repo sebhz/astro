@@ -1,4 +1,4 @@
---These can be set directly, or through the util.load_params()
+-- These can be set directly, or through the util.load_params()
 -- which will assign them based on values in a parameter text file.
 --
 -- Abbreviation for standard timezone (e.g., "CST" for North American

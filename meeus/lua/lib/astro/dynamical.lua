@@ -328,6 +328,20 @@ local function dt_to_ut(jd)
 end
 
 --[[
+Convert Julian Day from terrestrial universal time to dynamical.
+
+    Parameters:
+        jd : Julian Day number (universal time)
+    Returns:
+        Julian Day number (dynamical time)
+
+--]]
+local function ut_to_dt(jd)
+    return jd + deltaT_seconds(jd) / seconds_per_day
+end
+
+
+--[[
 Converts from terrestrial dynamic time to barycentric dynamic time
 
     Parameters:
@@ -345,6 +359,7 @@ end
 
 if astro == nil then astro = {} end
 astro["dynamical"] = {dt_to_ut       = dt_to_ut,
+                      ut_to_dt       = ut_to_dt,
                       tdt_to_bdt     = tdt_to_bdt,
                       deltaT_seconds = deltaT_seconds}
 return astro

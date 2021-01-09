@@ -19,6 +19,7 @@ require "astro.globals"
 
 local modpi2      = astro.util.modpi2
 local fday_to_hms = astro.util.fday_to_hms
+local hms_to_fday = astro.util.hms_to_fday
 
 --[[
 Return True if this is a leap year in the Julian or Gregorian calendars
@@ -89,6 +90,17 @@ local function cal_to_jd(yr, mo, day, gregorian)
         B = 0
     end
     return math.floor(365.25 * (yr + 4716)) + math.floor(30.6001 * (mo + 1)) + day + B - 1524.5
+end
+
+--[[
+Get the julian day corresponding to current UTC time
+--]]
+local function get_current_jd()
+    local date=os.date("!*t")
+
+    return cal_to_jd(date['year'],
+                     date['month'],
+                     date['day'] + hms_to_fday(date['hour'], date['min'], date['sec']))
 end
 
 --[[
@@ -567,6 +579,7 @@ end
 if astro == nil then astro = {} end
 astro["calendar"] = {ut_to_lt                = ut_to_lt,
             lt_to_str               = lt_to_str,
+            get_current_jd          = get_current_jd,
             jd_to_jcent             = jd_to_jcent,
             jd_to_day_of_week       = jd_to_day_of_week,
             jd_to_cal               = jd_to_cal,

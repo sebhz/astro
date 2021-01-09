@@ -1,10 +1,13 @@
 require "astro.util"
+require "astro.globals"
 require "astro.earth"
 require "astro.sidereal"
 
 local modpi2                           = astro.util.modpi2
 local geographical_to_geocentric_lat   = astro.earth.geographical_to_geocentric_lat
 local apparent_sidereal_time_greenwich = astro.sidereal.apparent_sidereal_time_greenwich
+local mean_sidereal_time_greenwich     = astro.sidereal.mean_sidereal_time_greenwich
+
 --[[
 Convert ecliptic to equitorial coordinates.
 
@@ -26,6 +29,15 @@ local function ecl_to_equ(longitude, latitude, obliquity)
     local ra = modpi2(math.atan2(sinl * cose - math.tan(latitude) * sine, math.cos(longitude)))
     local dec = math.asin(math.sin(latitude) * cose + math.cos(latitude) * sine * sinl)
     return ra, dec
+end
+
+-- get local hour angle in radians
+local function get_hour_angle(jd, alpha, mean)
+    if mean ~= nil then
+        return mean_sidereal_time_greenwich(jd) - astro.globals.longitude - alpha
+    else
+        return modpi2(apparent_sidereal_time_greenwich(jd) - astro.globals.longitude - alpha)
+    end
 end
 
 --[[
@@ -109,6 +121,7 @@ end
 
 if astro == nil then astro = {} end
 astro["coordinates"] = {
+         get_hour_angle            = get_hour_angle,
          equ_to_ecl                = equ_to_ecl,
          equ_to_horiz              = equ_to_horiz,
          ecl_to_equ                = ecl_to_equ,
