@@ -316,86 +316,8 @@ local function polynomial(terms, x)
     return result
 end
 
---[[
-Read a parameter file and assign global values.
-
-    Parameters:
-        parameter file name
-
-    Returns:
-        nothing
---]]
-local function load_params(param_file)
-    local f = assert(loadfile(param_file)) f()
-    local sto, dto, lgv, lav
-
-    local stn = astrolabe_param.standard_timezone_name or "CST" -- Defaults the name to CST
-    local s = astrolabe_param.standard_timezone_offset or "0 hours" -- Defaults the offset to 0 days
-    for offset, unit in string.gmatch(s, "(%d+)%s+(%w+)") do
-        sto = tonumber(offset)
-        if sto == nil then
-            error("Bad standard timezone offset :"..offset)
-        end
-        if unit ~= "day" and unit ~= "days" and unit ~= "hour" and unit ~= "hours" and
-           unit ~= "minute" and unit ~= "minutes" and unit ~= "second" and unit ~= "seconds" then
-           error("Bad standard timezone offset unit :"..unit)
-        end
-        if unit == "hour" or unit == "hours" then sto = sto/24 end
-        if unit == "minute" or unit == "minutes" then sto = sto/minutes_per_day end
-        if unit == "second" or unit == "seconds" then sto = sto/seconds_per_day end
-    end
-
-    local dtn = astrolabe_param.daylight_timezone_name or "CDT" -- Defaults the name to CDT
-    s = astrolabe_param.daylight_timezone_offset or "0 hours" -- Defaults the offset to 0 days
-    for offset, unit in string.gmatch(s, "(%d+)%s+(%w+)") do
-        dto = tonumber(offset)
-        if dto == nil then
-            error("Bad daylight timezone offset :"..offset)
-        end
-        if unit ~= "day" and unit ~= "days" and unit ~= "hour" and unit ~= "hours" and
-           unit ~= "minute" and unit ~= "minutes" and unit ~= "second" and unit ~= "seconds" then
-           error("Bad daylight timezone offset unit :"..unit)
-        end
-        if unit == "hour" or unit == "hours" then dto = dto/24 end
-        if unit == "minute" or unit == "minutes" then dto = dto/minutes_per_day end
-        if unit == "second" or unit == "seconds" then dto = dto/seconds_per_day end
-    end
-
-    local longitude = astrolabe_param.longitude or "0 east"
-    for value, direction in string.gmatch(longitude, "(%w+)%s+(%w+)") do
-        lgv = tonumber(value)
-        if lgv == nil then
-            error("Bad longitude value :"..value)
-        end
-        if direction ~= "east" and direction ~= "west" then
-           error("Bad longitude direction :"..direction)
-        end
-        if direction == "east" then lgv = -lgv end
-        lgv = d_to_r(lgv)
-    end
-
-    local latitude = astrolabe_param.latitude or "0 north"
-    for value, direction in string.gmatch(latitude, "(%w+)%s+(%w+)") do
-        lav = tonumber(value)
-        if lav == nil then
-            error("Bad latitude value :"..value)
-        end
-        if direction ~= "south" and direction ~= "north" then
-           error("Bad latitude direction :"..direction)
-        end
-        if direction == "south" then lav = -lav end
-        lav = d_to_r(lav)
-    end
-    astro.globals.standard_timezone_name   = stn
-    astro.globals.standard_timezone_offset = sto
-    astro.globals.daylight_timezone_name   = dtn
-    astro.globals.daylight_timezone_offset = dto
-    astro.globals.latitude                 = lav
-    astro.globals.longitude                = lgv
-end
-
 if astro == nil then astro = {} end
-astro["util"] = { load_params        = load_params,
+astro["util"] = {
          modpi2             = modpi2,
          interpolate_angle3 = interpolate_angle3,
          interpolate3       = interpolate3,
