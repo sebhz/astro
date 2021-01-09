@@ -184,6 +184,10 @@ local function geocentric_planet(jd, planet, deltaPsi, epsilon, delta)
     return ra, dec
 end
 
+if _VERSION == "Lua 5.3" or _VERSION == "Lua 5.4" then
+    unpack = table.unpack
+end
+
 if astro == nil then astro = {} end
 astro["vsop87d"] = { vsop_to_fk5       = vsop_to_fk5,
                      geocentric_planet = geocentric_planet,

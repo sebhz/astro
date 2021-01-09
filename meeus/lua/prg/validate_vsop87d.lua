@@ -1,9 +1,7 @@
 require "astro.util"
 require "astro.vsop87d"
 
-if _VERSION == "Lua 5.2" then
-    unpack = unpack
-else
+if _VERSION == "Lua 5.3" or _VERSION == "Lua 5.4" then
     unpack = table.unpack
 end
 
@@ -15,8 +13,8 @@ end
 
 local function report(computed, reference, delta)
     if math.abs(computed-reference) > delta then
-        print("ERROR\n\tComputed :"..computed.."\n\tReference :"..reference)
-        print("\tDifference"..math.abs(computed-reference))
+        print("ERROR\n\tComputed: "..computed.."\n\tReference: "..reference)
+        print("\tDifference: "..math.abs(computed-reference))
         return true
     end
 end
@@ -27,7 +25,7 @@ if #arg ~= 1 then
 end
 
 local f = io.open(arg[1], "r")
-if not f then error("Unable to open file"..arg[1]) end
+if not f then error("Unable to open file "..arg[1]) end
 local content = f:read("*all")
 f:close()
 
@@ -68,8 +66,8 @@ print(#_t.." test:")
 local err = false
 for i, v in ipairs(_t) do
     planet, jd, l, b, r = unpack(v)
-    print(i..": "..planet, jd)
     local L, B, R = astro.vsop87d.dimension3(jd, planet)
+    print(planet, jd)
     err = err or report(L, l, 1e-10)
     err = err or report(B, b, 1e-10)
     err = err or report(R, r, 1e-10)
