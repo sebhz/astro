@@ -36,8 +36,8 @@ get_sun_coord(){
     # And correct altitude for atmospheric refraction
     local _ALTITUDE=$(bc -l <<< "$_TRUE_ALTITUDE + $(refraction $_TRUE_ALTITUDE)")
 
-    echo -n $(bc -l <<< "scale=2; $_ALTITUDE/1")
-    echo -n ","
+    echo -n "α="$(bc -l <<< "scale=2; $_ALTITUDE/1")
+    echo -n ",γ="
     bc -l <<< "scale=2; $_AZIMUTH/1"
 }
 
