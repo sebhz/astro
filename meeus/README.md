@@ -2,7 +2,7 @@ An implementation of some of the cabalistic formulas from Jan Meeus, in his [Ast
 
 This was written to create monitors for tiling window managers, hence the odd choice of languages:
 - I used the Lua code with [Notion][2]. It can probably work also with [Awesome][3] or another WM using lua-based configuration and monitors,
-- I use the bash code with [dwm][4].
+- I use the bash and C code with [dwm][4].
 
 For a recent and more complete implementation of Meeus formulas in a fashionable language, [pymeeus][6], seems to be very decent !
 

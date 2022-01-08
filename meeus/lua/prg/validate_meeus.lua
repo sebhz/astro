@@ -223,7 +223,7 @@ report("latitude", math.deg(B), 6.684170, 1e-6, "degrees")
 
 print("13.a Ecliptical to equitorial coordinates")
 ra, dec = astro.coordinates.ecl_to_equ(math.rad(113.215630), math.rad(6.684170), math.rad(23.4392911))
-report("right accension", math.deg(ra), 116.328942, 1e-6, "degrees")
+report("right ascension", math.deg(ra), 116.328942, 1e-6, "degrees")
 report("declination", math.deg(dec), 28.026183, 1e-6, "degrees")
 
 print("13.b Equitorial to horizontal coordinates")
