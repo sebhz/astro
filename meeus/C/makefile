@@ -20,7 +20,8 @@ CFLAGS += -Wall -Iinclude
 LDLIBS += -lm
 
 PRG = prg/validate_meeus prg/validate_vsop87d prg/sun_coord prg/biorythm
-.PHONY : clean indent
+
+.PHONY : clean indent doc
 
 all: $(PRG)
 
@@ -41,6 +42,9 @@ prg/biorythm: prg/biorythm.o $(MEEUS_LIB)
 
 indent:
 	indent -braces-on-if-lines --no-tabs --indent-level4 prg/*.c lib/*.c include/meeus.h include/test.h
+
+doc:
+	doxygen
 
 clean:
 	rm -fr $(PRG) $(MEEUS_LIB) prg/*.o lib/*.o prg/*~ lib/*~ include/*~
