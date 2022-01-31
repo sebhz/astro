@@ -19,7 +19,7 @@ get_sun_coord (double phi, double L)
        Let's convert them to horizontal coordinates
        at the observer's latitude and longitude */
     coo_get_local_hour_angle (jd, L, alpha, &H, 1);
-    coo_ecl_to_hor (H, delta, phi, &A, &h);
+    coo_equ_to_hor (H, delta, phi, &A, &h);
     /* and correct altitude for the atmospheric refraction
        as we want to get the "measured" coordinates */
     h += ref_refraction_true_to_apparent (h, 1) / 60;

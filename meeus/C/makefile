@@ -47,4 +47,4 @@ doc:
 	doxygen
 
 clean:
-	rm -fr $(PRG) $(MEEUS_LIB) prg/*.o lib/*.o prg/*~ lib/*~ include/*~
+	rm -fr $(PRG) $(MEEUS_LIB) prg/*.o lib/*.o prg/*~ lib/*~ include/*~ doc/*

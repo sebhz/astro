@@ -73,33 +73,49 @@ test_datetime (void)
     dt_get_day_of_year (&td, &dowy);
     res (dowy, 113, 0, 0);
 
-    printf ("Meeus - 9 (Gregorian Easter) - ");
+    printf ("Meeus - 8 (Gregorian Easter) - ");
     int pattern[][3] = {
-        {1991, 3, 31}, {1992, 4, 19}, {1993, 4, 11}, {1954, 4, 18}, {2000, 4, 23}, {1818, 3, 22}, {1967, 3, 26}};
+        {1991, 3, 31}, {1992, 4, 19}, {1993, 4, 11}, {1954, 4, 18}, {2000, 4,
+                                                                     23},
+        {1818, 3, 22}, {1967, 3, 26}
+    };
     int tmp_s = 1;
-    for (int i=0; i < (sizeof pattern)/(sizeof pattern[0]); i++) {
+    for (int i = 0; i < (sizeof pattern) / (sizeof pattern[0]); i++) {
         int *p = pattern[i];
-        cal_get_easter(p[0], &m, &d);
+        cal_get_easter (p[0], &m, &d);
         if ((m != p[1]) && (d != p[2])) {
             tmp_s = 0;
             break;
         }
     }
     if (tmp_s)
-        printf("PASS\n");
+        printf ("PASS\n");
     else {
-        printf("FAIL\n");
+        printf ("FAIL\n");
         success = 0;
     }
 
-    printf ("Meeus - 9 (Julian Easter) - ");
-    cal_get_easter(711, &m, &d);
+    printf ("Meeus - 8 (Julian Easter) - ");
+    cal_get_easter (711, &m, &d);
     if ((m == 4) && (d == 12))
-        printf("PASS\n");
+        printf ("PASS\n");
     else {
-        printf("FAIL\n");
+        printf ("FAIL\n");
         success = 0;
     }
+
+    printf ("Meeus - 9.a - (Pesach) - ");
+    int jy;
+    cal_get_pesach (1990, &jy, &m, &d);
+    res_coord ((double[]) { jy, m, d }, (double[]) { 5750, 4, 10 }, 0, 0);
+
+    printf ("Meeus - 9.a - (1 Tishri) - ");
+    cal_get_1_tishri (1990, &jy, &m, &d);
+    res_coord ((double[]) { jy, m, d }, (double[]) { 5751, 9, 20 }, 0, 0);
+
+    printf ("Meeus - 9.a - (Jewish year type) - ");
+    cal_get_jewish_year_type (5751, &m, &d);
+    res_coord ((double[]) { jy, m, d }, (double[]) { 5751, 0, 354 }, 0, 0);
 }
 
 void
@@ -205,7 +221,7 @@ test_coordinates (void)
     double A, h;
     double phi = dms_to_d (38, 55, 17);
     double delta = dms_to_d (-6, -43, -11.61);
-    coo_ecl_to_hor (H, delta, phi, &A, &h);
+    coo_equ_to_hor (H, delta, phi, &A, &h);
     res (A, 68.0337, 4, 0);
     printf ("Meeus - 13.b (equatorial to horizontal - altitude) - ");
     res (h, 15.1249, 4, 0);

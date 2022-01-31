@@ -1,7 +1,24 @@
+/**
+ * @file datetime.c
+ * Meeus chapter 7.
+ *
+ * Function linked to manipulation of Julian days
+ */
 #include <stdio.h>
 #include <time.h>
 #include "meeus.h"
 
+/**
+ * @brief compares two struct tm dates
+ *
+ * @param[in] d1 first date to compare
+ * @param[in] d2 second date to compare
+ *
+ * @return d1 and d2 comparison
+ * @retval 0 d1 and d2 are equal
+ * @retval >0 d1 is posterior to d2
+ * @retval <0 d1 is anterior to d2
+ */
 int
 dt_cmpdate (struct tm *d1, struct tm *d2)
 {
@@ -26,15 +43,36 @@ dt_cmpdate (struct tm *d1, struct tm *d2)
         return d1->tm_year - d2->tm_year;
 }
 
+/**
+ * @brief check if a struct tm date is part of the Gregorian calendar.
+ *
+ * @param[in] date
+ *
+ * @return the date status
+ * @retval 0 the date is part of the Julian calendar (before 1582 Nov. 15th)
+ * @retval 1 the date is part of the Gregorian calendar (after 1582 Nov. 15th)
+ */
 int
 dt_is_gregorian (struct tm *date)
 {
     if (dt_cmpdate
-        (date, &(struct tm) { 0, 0, 0, 4, 10, 1852 - 1900, 3, 0, 0 }) >= 0)
+        (date, &(struct tm) { 0, 0, 0, 15, 10, 1582 - 1900, 3, 0, 0 }) >= 0)
         return 1;
     return 0;
 }
 
+/**
+ * @brief check if a year is a leap year
+ *
+ * Any year before 1582 is supposed to be in the Julian calendar.
+ * Any year after 1582 is supposed to be in the Gregorian calendar.
+ *
+ * @param[in] year (YYYY format, e.g. 1515, 2021,...)
+ *
+ * @return the year status
+ * @retval 0 the year is not a leap year
+ * @retval 1 the year is a leap year
+ */
 int
 dt_is_leap (int year)
 {
@@ -48,6 +86,15 @@ dt_is_leap (int year)
     return 0;
 }
 
+/**
+ * @brief get the fractional day corresponding to a struct tm date
+ *
+ * example April 3, 18h is fractional day 3.75
+ *
+ * @param[in] date
+ *
+ * @return the fractional day corresponding to the input date
+ */
 double
 dt_get_frac_day (struct tm *date)
 {
@@ -56,6 +103,19 @@ dt_get_frac_day (struct tm *date)
                       (double) (date->tm_sec)) / DT_SECS_PER_DAY);
 }
 
+/**
+ * @brief get the julian day corresponding to a date
+ *
+ * Any date before 1582 Nov 15 is supposed to be in the Julian calendar.
+ * Any date after 1582 Nov 15 is supposed to be in the Gregorian calendar.
+ *
+ * @param[in] date
+ * @param[out] jd the julian day
+ *
+ * @return error status of the function
+ * @retval M_INVALID_RANGE_ERR the input date is before Jan 1st -4712 12:00:00 (negative Julian Day)
+ * @retval M_NO_ERR the function executed correctly
+ */
 m_err_t
 dt_date_to_jd (struct tm *date, double *jd)
 {
@@ -87,6 +147,19 @@ dt_date_to_jd (struct tm *date, double *jd)
     return M_NO_ERR;
 }
 
+/**
+ * @brief get the day of the week corresponding to a date
+ *
+ * Any date before 1582 Nov 15 is supposed to be in the Julian calendar.
+ * Any date after 1582 Nov 15 is supposed to be in the Gregorian calendar.
+ *
+ * @param[in] date
+ * @param[out] dow the day of the week (Sunday:0, Monday:1, etc.)
+ *
+ * @return error status of the function
+ * @retval M_INVALID_RANGE_ERR the input date is before Jan 1st -4712 12:00:00 (negative Julian Day)
+ * @retval M_NO_ERR the function executed correctly
+ */
 m_err_t
 dt_get_day_of_week (struct tm *date, int *dow)
 {
@@ -99,6 +172,18 @@ dt_get_day_of_week (struct tm *date, int *dow)
     return err;
 }
 
+/**
+ * @brief get the day of the year week corresponding to a date
+ *
+ * Any date before 1582 Nov 15 is supposed to be in the Julian calendar.
+ * Any date after 1582 Nov 15 is supposed to be in the Gregorian calendar.
+ *
+ * @param[in] date
+ * @param[out] doy the day of the year (between 1 and 366)
+ *
+ * @return error status of the function
+ * @retval M_NO_ERR the function executed correctly
+ */
 m_err_t
 dt_get_day_of_year (struct tm *date, int *doy)
 {
@@ -115,6 +200,16 @@ dt_get_day_of_year (struct tm *date, int *doy)
     return M_NO_ERR;
 }
 
+/**
+ * @brief get the date corresponding to a Julian Day
+ *
+ * @param[in] jd the julian day
+ * @param[out] date
+ *
+ * @return error status of the function
+ * @retval M_INVALID_RANGE_ERR the input JD is negative
+ * @retval M_NO_ERR the function executed correctly
+ */
 m_err_t
 dt_jd_to_date (double jd, struct tm *date)
 {
@@ -158,6 +253,19 @@ dt_jd_to_date (double jd, struct tm *date)
     return dt_get_day_of_year (date, &(date->tm_yday));
 }
 
+/**
+ * @brief get the julian day corresponding to the current date
+ *
+ * Any date before 1582 Nov 15 is supposed to be in the Julian calendar.
+ * Any date after 1582 Nov 15 is supposed to be in the Gregorian calendar.
+ *
+ * @param[in] is_local if 1, current date is the local date. If 0 it is the UTC date.
+ * @param[out] jd the julian day
+ *
+ * @return error status of the function
+ * @retval M_INVALID_RANGE_ERR the current date is before Jan 1st -4712 12:00:00 (negative Julian Day)
+ * @retval M_NO_ERR the function executed correctly
+ */
 m_err_t
 dt_get_current_jd (int is_local, double *jd)
 {
@@ -173,6 +281,18 @@ dt_get_current_jd (int is_local, double *jd)
     return dt_date_to_jd (date, jd);
 }
 
+/**
+ * @brief set the wday field of a struct tm with the correct value
+ *
+ * Any date before 1582 Nov 15 is supposed to be in the Julian calendar.
+ * Any date after 1582 Nov 15 is supposed to be in the Gregorian calendar.
+ *
+ * @param[inout] date
+ *
+ * @return error status of the function
+ * @retval M_INVALID_RANGE_ERR the current date is before Jan 1st -4712 12:00:00 (negative Julian Day)
+ * @retval M_NO_ERR the function executed correctly
+ */
 m_err_t
 dt_set_day_of_week (struct tm *date)
 {

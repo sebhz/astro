@@ -67,7 +67,10 @@ m_err_t dt_get_day_of_week (struct tm *date, int *dow);
 m_err_t dt_get_day_of_year (struct tm *date, int *doy);
 
 /* calendar */
-m_err_t cal_get_easter(int year, int *month, int *day);
+m_err_t cal_get_easter (int year, int *month, int *day);
+m_err_t cal_get_pesach (int year, int *jyear, int *month, int *day);
+m_err_t cal_get_1_tishri (int year, int *jyear, int *month, int *day);
+m_err_t cal_get_jewish_year_type (int jyear, int *is_leap, int *ndays);
 
 /* dynamical time */
 double dy_get_deltaT_seconds (double jde);
@@ -86,8 +89,10 @@ void coo_equ_to_ecl (double alpha, double delta, double epsilon,
 void
 coo_ecl_to_equ (double lambda, double beta, double epsilon, double *alpha,
                 double *delta);
-void coo_ecl_to_hor (double H, double delta, double phi, double *A,
+void coo_equ_to_hor (double H, double delta, double phi, double *A,
                      double *h);
+void
+coo_hor_to_equ (double A, double h, double phi, double *H, double *delta);
 m_err_t coo_get_local_hour_angle (double jd, double L, double alpha,
                                   double *hour_angle, int is_apparent);
 
