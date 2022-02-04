@@ -1,9 +1,16 @@
+/**
+ * @file equinox.c
+ * Meeus chapter 27. Equinoxes and solstices.
+ */
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
 #include "meeus.h"
 
-double eqx_coef[][3] = {
+/**
+ * @brief Meeus table 27.c
+ */
+static double eqx_coef[][3] = {
     {485, 324.96, 1934.136},
     {203, 337.23, 32964.467},
     {199, 342.08, 20.186},
@@ -30,7 +37,12 @@ double eqx_coef[][3] = {
     {8, 15.45, 16859.074}
 };
 
-void
+/**
+ * @brief Return mean equinoxes and solstices for a given year
+ *
+ * @param[inout] eqx structure containing year as well as equinox and solstices
+ */
+static void
 eqx_get_mean_sol_eqx (struct eqx_s *eqx)
 {
     double Y;
@@ -73,7 +85,15 @@ eqx_get_mean_sol_eqx (struct eqx_s *eqx)
                  }, Y, 4);
 }
 
-double
+/**
+ * @brief Return corrected jde from a mean equinox or solstice jde
+ *
+ * This is a low accuracy correction
+ *
+ * @param[in] jde0 mean jde of equinox or solstice
+ * @return corrected jde
+ */
+static double
 eqx_correct_equinox (double jde0)
 {
     double T = get_century_since_j2000 (jde0);
@@ -88,11 +108,20 @@ eqx_correct_equinox (double jde0)
     return jde0 + 0.00001 * S / deltaLambda;
 }
 
-double
-eqx_iterate_equinox (double jde, int k)
+/**
+ * @brief Return corrected jde from a mean equinox or solstice jde
+ *
+ * This is a high accuracy correction
+ *
+ * @param[in] jde0 mean jde of equinox or solstice
+ * @param[in] k O for March equinox, 1 for Jun solstice, 2 for September Equinox, 3 for December solstice
+ * @return corrected jde
+ */
+static double
+eqx_iterate_equinox (double jde0, int k)
 {
     double lambda = 0, beta, R;
-    double jde_i = jde;
+    double jde_i = jde0;
     double correction;
 
     /* TODO: implement a timeout */
@@ -106,12 +135,18 @@ eqx_iterate_equinox (double jde, int k)
     return jde_i;
 }
 
+/**
+ * @brief Compute equinoxes and solstice for a given year
+ *
+ * @param[inout] eqx structure containing year as well as equinox and solstices
+ * @param[in] high_accuracy If 1 use high accuracy method. Else use low accuracy
+ */
 void
-eqx_get_sol_eqx (struct eqx_s *eqx, int high_precision)
+eqx_get_sol_eqx (struct eqx_s *eqx, int high_accuracy)
 {
     eqx_get_mean_sol_eqx (eqx);
 
-    if (!high_precision) {
+    if (!high_accuracy) {
         eqx->mar_eqx = eqx_correct_equinox (eqx->mar_eqx);
         eqx->jun_sol = eqx_correct_equinox (eqx->jun_sol);
         eqx->sep_eqx = eqx_correct_equinox (eqx->sep_eqx);

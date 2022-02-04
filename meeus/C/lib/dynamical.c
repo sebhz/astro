@@ -1,11 +1,23 @@
+/**
+ * @file dynamical.c
+ * Meeus chapter 10. Dynamical time.
+ */
 #include <stdio.h>
 #include <time.h>
 #include "meeus.h"
 
-/* Those are taken from https://eclipse.gsfc.nasa.gov/5MCSE/5MCSE-Text11.pdf
-   section 2.7. It came from Meeus and Espenak ! */
-/* No specific check performed on JDE - the further away in time the less
-   accurate */
+/**
+ * @brief   Get deltaT = UT - DT. Difference between Universal Time and Dynamical Time.
+ *
+ * DeltaT can only be deduced from observation. This function implements polynomial
+ * expressions of deltaT found in  https://eclipse.gsfc.nasa.gov/5MCSE/5MCSE-Text11.pdf
+ * (authors Meeus and Espenak).
+ *
+ * @param[in] jde Julian Day Ephemeris (Dynamical Time)
+ *
+ * @return deltaT for given jde, in seconds.
+ *
+ */
 double
 dy_get_deltaT_seconds (double jde)
 {
@@ -97,12 +109,28 @@ dy_get_deltaT_seconds (double jde)
         return -20 + 32 * u * u;
 }
 
+/**
+ * @brief   Convert a JDE (Julian Day Ephemeris - dynamical time) to a JD (Julian Day - universal time)
+ *
+ * @param[in] jde Julian Day Ephemeris (Dynamical Time)
+ *
+ * @return corresponding JD (Universal Time)
+ *
+ */
 double
 dy_dt_to_ut (double jde)
 {
     return jde - dy_get_deltaT_seconds (jde) / DT_SECS_PER_DAY;
 }
 
+/**
+ * @brief   Convert a JD (Julian Day - universal time) to a JDE (Julian Day Ephemeris - dynamical time)
+ *
+ * @param[in] jd (Universal time)
+ *
+ * @return corresponding Julian Day Ephemeris (Dynamical Time)
+ *
+ */
 double
 dy_ut_to_dt (double jd)
 {

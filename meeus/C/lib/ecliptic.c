@@ -1,13 +1,17 @@
+/**
+ * @file ecliptic.c
+ * Meeus chapter 22. Obliquity of the ecliptic. Nutation.
+ */
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
 #include "meeus.h"
 
-/*
-  [Meeus-1998: table 22.A]
-
-    D, M, M1, F, omega, psiK, psiT, epsK, epsT
-*/
+/**
+ *
+ * @brief table 22.A - coefficients for calculation of nutation in longitude and obliquity
+ *
+ */
 static double nut_tab[][9] = {
     {0, 0, 0, 0, 1, -171996, -174.2, 92025, 8.9},
     {-2, 0, 0, 2, 2, -13187, -1.6, 5736, -3.1},
@@ -74,7 +78,16 @@ static double nut_tab[][9] = {
     {2, -1, 0, 2, 2, -3, 0, 0, 0}
 };
 
-void
+/**
+ * @brief Helper function to retrieve the necessary parameters
+ *               for ecliptic calculations
+ *
+ * @param[in] T time since J2000, in Julian centuries
+ * @param[out] parm parameters array
+ *
+ * @see get_century_since_j2000 ()
+ */
+static void
 nut_get_params (double T, double *parm)
 {
     /* D - mean elongation of the Moon from the Sun */
@@ -103,7 +116,14 @@ nut_get_params (double T, double *parm)
                  }, T, 3);
 }
 
-/* Return nutation in longitude, expressed in arcseconds */
+/**
+ * @brief Get nutation in longitude
+ *
+ * @param[in] jde Julian Day Ephemeris (dynamical time)
+ * @param[in] high_accuracy If 1 use high accuracy (0.001 arcsecs) computation. If 0 use low accuracy (0.5 arcsecs).
+ *
+ * @return nutation in longitude, expressed in arc seconds.
+ */
 double
 ecl_nut_in_lon (double jde, int high_accuracy)
 {
@@ -135,7 +155,14 @@ ecl_nut_in_lon (double jde, int high_accuracy)
         0.23 * sind (2 * Lprime) + 0.21 * sind (2 * parm[4]);
 }
 
-/* Return nutation in obliquity, expressed in arcseconds */
+/**
+ * @brief Get nutation in obliquity
+ *
+ * @param[in] jde Julian Day Ephemeris (dynamical time)
+ * @param[in] high_accuracy If 1 use high accuracy (0.001 arcsecs) computation. If 0 use low accuracy (0.1 arcsecs).
+ *
+ * @return nutation in obliquity, expressed in arc seconds.
+ */
 double
 ecl_nut_in_obl (double jde, int high_accuracy)
 {
@@ -166,7 +193,19 @@ ecl_nut_in_obl (double jde, int high_accuracy)
         0.10 * cosd (2 * Lprime) - 0.09 * cosd (2 * parm[4]);
 }
 
-/* Return the mean obliquity of the ecliptic in arcseconds */
+/**
+ * @brief Get mean obliquity of the ecliptic
+ *
+ * Implements Meeus formulas 22.2 and 22.3.
+ *
+ * @param[in] jde Julian Day Ephemeris (dynamical time)
+ * @param[out] obl mean obliquity of the ecliptic expressed in arc seconds.
+ * @param[in] high_accuracy If 1 use high accuracy (0.01 arcsecs) computation. If 0 use low accuracy (1 arcsecs).
+ *
+ * @return function status
+ * @retval M_INVALID_RANGE_ERR jde out of the validity range of formula.
+ * @retval M_NO_ERR function completed correctly
+ */
 m_err_t
 ecl_mean_obl_ecliptic (double jde, double *obl, int high_accuracy)
 {
@@ -188,7 +227,17 @@ ecl_mean_obl_ecliptic (double jde, double *obl, int high_accuracy)
     return M_NO_ERR;
 }
 
-/* Return the true obliquity of the ecliptic in arcseconds */
+/**
+ * @brief Get true obliquity of the ecliptic
+ *
+ * @param[in] jde Julian Day Ephemeris (dynamical time)
+ * @param[out] obl true obliquity of the ecliptic expressed in arc seconds.
+ * @param[in] high_accuracy If 1 use high accuracy (0.01 arcsecs) computation. If 0 use low accuracy (1 arcsecs).
+ *
+ * @return function status
+ * @retval M_INVALID_RANGE_ERR jde out of the validity range of formula.
+ * @retval M_NO_ERR function completed correctly
+ */
 m_err_t
 ecl_true_obl_ecliptic (double jde, double *obl, int high_accuracy)
 {

@@ -3,7 +3,7 @@
 #include "time.h"
 #include "meeus.h"
 
-double aberration_coef_0[][3] = {
+static double aberration_coef_0[][3] = {
     {118.568, 87.5287, 359993.7286},
     {2.476, 85.0561, 719987.4571},
     {1.376, 27.8502, 4452671.1152},
@@ -20,23 +20,23 @@ double aberration_coef_0[][3] = {
     {0.021, 155.1241, 675553.2846}
 };
 
-double aberration_coef_1[][3] = {
+static double aberration_coef_1[][3] = {
     {7.311, 333.4515, 359993.7286},
     {0.305, 330.9814, 719987.4571},
     {0.01, 328.5170, 1079981.1857}
 };
 
-double aberration_coef_2[][3] = {
+static double aberration_coef_2[][3] = {
     {0.309, 241.4518, 359993.7286},
     {0.021, 205.0482, 719987.4571},
     {0.004, 297.861, 4452671.1152}
 };
 
-double aberration_coef_3[][3] = {
+static double aberration_coef_3[][3] = {
     {0.01, 154.7066, 359993.7286}
 };
 
-void
+static void
 sun_get_param (double jd, double *O, double *nu, double *R)
 {
     double T = get_century_since_j2000 (jd);
@@ -66,7 +66,7 @@ sun_get_param (double jd, double *O, double *nu, double *R)
 }
 
 /* Return aberration correction in arcseconds */
-double
+static double
 sun_get_aberration_correction (double jde, double R, int high_accuracy)
 {
     double tau = get_century_since_j2000 (jde) / 10;

@@ -27,17 +27,17 @@ test_datetime (void)
             td.tm_mday, td.tm_hour, td.tm_min, td.tm_sec, td.tm_yday);
     printf ("Current JD: %f\n", jd);
 
-    printf ("Meeus - 7.a - ");
+    printf ("Meeus -  7.a - ");
     td = (struct tm) { 0, 29, 19, 4, 9, 57, 0, 0, 0 };
     dt_date_to_jd (&td, &jd);
     res (jd, 2436116.31, 2, 0);
 
-    printf ("Meeus - 7.b - ");
+    printf ("Meeus -  7.b - ");
     td = (struct tm) { 0, 0, 12, 27, 0, (333 - 1900), 0, 0, 0 };
     dt_date_to_jd (&td, &jd);
     res (jd, 1842713.0, 0, 0);
 
-    printf ("Meeus - 7.c - ");
+    printf ("Meeus -  7.c - ");
     dt_jd_to_date (2436116.31, &td);
     if ((td.tm_mday == 4) && (td.tm_mon == 9) && (td.tm_year == 57)
         && (td.tm_hour == 19) && (td.tm_min == 26))
@@ -47,33 +47,33 @@ test_datetime (void)
         printf ("FAIL\n");
     }
 
-    printf ("Meeus - 7.d-1 - ");
+    printf ("Meeus -  7.d-1 - ");
     td = (struct tm) { 0, 0, 0, 20, 3, 10, 0, 0, 0 };
     dt_date_to_jd (&td, &jd);
     res (jd, 2418781.5, 1, 0);
 
-    printf ("Meeus - 7.d-2 - ");
+    printf ("Meeus -  7.d-2 - ");
     td = (struct tm) { 0, 0, 0, 9, 1, 86, 0, 0, 0 };
     dt_date_to_jd (&td, &jd);
     res (jd, 2446470.5, 1, 0);
 
-    printf ("Meeus - 7.e - ");
+    printf ("Meeus -  7.e - ");
     td = (struct tm) { 0, 0, 12, 30, 5, 54, 0, 0, 0 };
     int dowy;
     dt_get_day_of_week (&td, &dowy);
     res (dowy, 3, 0, 0);
 
-    printf ("Meeus - 7.f - ");
+    printf ("Meeus -  7.f - ");
     td = (struct tm) { 0, 0, 0, 14, 10, 78, 0, 0, 0 };
     dt_get_day_of_year (&td, &dowy);
     res (dowy, 318, 0, 0);
 
-    printf ("Meeus - 7.g - ");
+    printf ("Meeus -  7.g - ");
     td = (struct tm) { 0, 0, 0, 22, 3, 88, 0, 0, 0 };
     dt_get_day_of_year (&td, &dowy);
     res (dowy, 113, 0, 0);
 
-    printf ("Meeus - 8 (Gregorian Easter) - ");
+    printf ("Meeus -  8 (Gregorian Easter) - ");
     int pattern[][3] = {
         {1991, 3, 31}, {1992, 4, 19}, {1993, 4, 11}, {1954, 4, 18}, {2000, 4,
                                                                      23},
@@ -95,7 +95,7 @@ test_datetime (void)
         success = 0;
     }
 
-    printf ("Meeus - 8 (Julian Easter) - ");
+    printf ("Meeus -  8 (Julian Easter) - ");
     cal_get_easter (711, &m, &d);
     if ((m == 4) && (d == 12))
         printf ("PASS\n");
@@ -104,16 +104,16 @@ test_datetime (void)
         success = 0;
     }
 
-    printf ("Meeus - 9.a - (Pesach) - ");
+    printf ("Meeus -  9.a (Pesach) - ");
     int jy;
     cal_get_pesach (1990, &jy, &m, &d);
     res_coord ((double[]) { jy, m, d }, (double[]) { 5750, 4, 10 }, 0, 0);
 
-    printf ("Meeus - 9.a - (1 Tishri) - ");
+    printf ("Meeus -  9.a (1 Tishri) - ");
     cal_get_1_tishri (1990, &jy, &m, &d);
     res_coord ((double[]) { jy, m, d }, (double[]) { 5751, 9, 20 }, 0, 0);
 
-    printf ("Meeus - 9.a - (Jewish year type) - ");
+    printf ("Meeus -  9.a (Jewish year type) - ");
     cal_get_jewish_year_type (5751, &m, &d);
     res_coord ((double[]) { jy, m, d }, (double[]) { 5751, 0, 354 }, 0, 0);
 }
@@ -325,7 +325,7 @@ test_equation_of_time (void)
     printf ("Meeus - 28.a (equation of time) - ");
     eqt_equation_of_time (2448908.5, &eqt);
     /* Allowed to fail since we are using complete VSOP87 for sun's position */
-    res (eqt, 3.427753, 6, 1);
+    res (eqt, 3.427351, 6, 1);
 }
 
 void

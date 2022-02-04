@@ -115,7 +115,7 @@ struct eqx_s
     double sep_eqx;
     double dec_sol;
 };
-void eqx_get_sol_eqx (struct eqx_s *eqx, int high_precision);
+void eqx_get_sol_eqx (struct eqx_s *eqx, int high_accuracy);
 
 /* sun */
 m_err_t sun_mean_geocentric_coord (double jde, double *alpha, double *delta,

@@ -12,7 +12,7 @@
  * Returns mean sidereal time at Greenwich for JD corresponding to 0h UT.
  * (e.g. JD decimal part must be 0.5).
  *
- * Implements Meeus 12.2 and 12.3.
+ * Implements Meeus formulas 12.2 and 12.3.
  *
  * @param[in] jd Julian day (Universal Time). Must end by .5.
  * @param[out] sid_t sidereal time at Greenwich for JD.
@@ -21,8 +21,7 @@
  * @retval M_INVALID_RANGE_ERR JD decimal part is not 0.5
  * @retval M_NO_ERR function ran properly
  */
-
-m_err_t
+static m_err_t
 sid_get_mean_gw_sid_time_0ut (double jd, double *sid_t)
 {
     double T = get_century_since_j2000 (jd);
@@ -44,7 +43,7 @@ sid_get_mean_gw_sid_time_0ut (double jd, double *sid_t)
  *
  * Returns mean sidereal time at Greenwich for any JD
  *
- * Implements Meeus 12.4.
+ * Implements Meeus formula 12.4.
  *
  * @param[in] jd Julian day (Universal Time).
  * @param[out] sid_t sidereal time at Greenwich for JD.
@@ -52,7 +51,7 @@ sid_get_mean_gw_sid_time_0ut (double jd, double *sid_t)
  * @return Error status if the function
  * @retval M_ERR_OK function ran properly
  */
-m_err_t
+static m_err_t
 sid_get_mean_gw_sid_time_anyut (double jd, double *sid_t)
 {
     double T = get_century_since_j2000 (jd);

@@ -24,7 +24,7 @@
 /**
  * @brief   Convert equatorial to ecliptical coordinates
  *
- * Implements Meeus 13.1 and 13.2.
+ * Implements Meeus formulas 13.1 and 13.2.
  *
  * @param[in] alpha body right ascension
  * @param[in] delta body declination
@@ -53,7 +53,7 @@ coo_equ_to_ecl (double alpha, double delta, double epsilon, double *lambda,
 /**
  * @brief   Convert ecliptical to equatorial coordinates
  *
- * Implements Meeus 13.3 and 13.4.
+ * Implements Meeus formulas 13.3 and 13.4.
  *
  * @param[in] lambda ecliptical longitude, measured from the vernal equinox. Positive.
  * @param[in] beta ecliptical latitude, positive towards the ecliptical north pole.
@@ -82,7 +82,7 @@ coo_ecl_to_equ (double lambda, double beta, double epsilon, double *alpha,
 /**
  * @brief   Convert equatorial to horizontal coordinates
  *
- * Implements Meeus 13.5 and 13.6.
+ * Implements Meeus formulas 13.5 and 13.6.
  *
  * @param[in] H local hour angle of the body, measured westward from south
  * @param[in] delta body declination
