@@ -120,12 +120,12 @@ nut_get_params (double T, double *parm)
  * @brief Get nutation in longitude
  *
  * @param[in] jde Julian Day Ephemeris (dynamical time)
- * @param[in] high_accuracy If 1 use high accuracy (0.001 arcsecs) computation. If 0 use low accuracy (0.5 arcsecs).
+ * @param[in] accuracy If M_HIGH_ACC, use high accuracy (0.001 arcsecs) computation. If M_LOW_ACC use low accuracy (0.5 arcsecs).
  *
  * @return nutation in longitude, expressed in arc seconds.
  */
 double
-ecl_nut_in_lon (double jde, int high_accuracy)
+ecl_nut_in_lon (double jde, m_acc_t accuracy)
 {
     double T = get_century_since_j2000 (jde);
     double parm[5];
@@ -133,7 +133,7 @@ ecl_nut_in_lon (double jde, int high_accuracy)
     double nut = 0.0;
 
     nut_get_params (T, parm);
-    if (high_accuracy) {        /* precise down to 0.001 arcsecond */
+    if (accuracy == M_HIGH_ACC) {       /* precise down to 0.001 arcsecond */
         for (int i = 0; i < (sizeof nut_tab) / (sizeof *nut_tab); i++) {
             double *coefs = nut_tab[i];
             arg = 0;
@@ -159,12 +159,12 @@ ecl_nut_in_lon (double jde, int high_accuracy)
  * @brief Get nutation in obliquity
  *
  * @param[in] jde Julian Day Ephemeris (dynamical time)
- * @param[in] high_accuracy If 1 use high accuracy (0.001 arcsecs) computation. If 0 use low accuracy (0.1 arcsecs).
+ * @param[in] accuracy If M_HIGH_ACC use high accuracy (0.001 arcsecs) computation. If M_LOW_ACC use low accuracy (0.1 arcsecs).
  *
  * @return nutation in obliquity, expressed in arc seconds.
  */
 double
-ecl_nut_in_obl (double jde, int high_accuracy)
+ecl_nut_in_obl (double jde, m_acc_t accuracy)
 {
     double T = get_century_since_j2000 (jde);
     double parm[5];
@@ -172,7 +172,7 @@ ecl_nut_in_obl (double jde, int high_accuracy)
     double nut = 0.0;
 
     nut_get_params (T, parm);
-    if (high_accuracy) {        /* Accurate to 0.001 arcseconds */
+    if (accuracy == M_HIGH_ACC) {       /* Accurate to 0.001 arcseconds */
         for (int i = 0; i < (sizeof nut_tab) / (sizeof *nut_tab); i++) {
             double *coefs = nut_tab[i];
             arg = 0;
@@ -200,18 +200,18 @@ ecl_nut_in_obl (double jde, int high_accuracy)
  *
  * @param[in] jde Julian Day Ephemeris (dynamical time)
  * @param[out] obl mean obliquity of the ecliptic expressed in arc seconds.
- * @param[in] high_accuracy If 1 use high accuracy (0.01 arcsecs) computation. If 0 use low accuracy (1 arcsecs).
+ * @param[in] accuracy If M_HIGH_ACC use high accuracy (0.01 arcsecs) computation. If M_LOW_ACC use low accuracy (1 arcsecs).
  *
  * @return function status
  * @retval M_INVALID_RANGE_ERR jde out of the validity range of formula.
  * @retval M_NO_ERR function completed correctly
  */
 m_err_t
-ecl_mean_obl_ecliptic (double jde, double *obl, int high_accuracy)
+ecl_mean_obl_ecliptic (double jde, double *obl, m_acc_t accuracy)
 {
     double T = get_century_since_j2000 (jde);
 
-    if (high_accuracy) {
+    if (accuracy == M_HIGH_ACC) {
         if (fabs (T) > 100)
             return M_INVALID_RANGE_ERR;
         /* Laskar formula - precise down to about 0.01 arcs between 1000AD and 3000AD */
@@ -232,18 +232,18 @@ ecl_mean_obl_ecliptic (double jde, double *obl, int high_accuracy)
  *
  * @param[in] jde Julian Day Ephemeris (dynamical time)
  * @param[out] obl true obliquity of the ecliptic expressed in arc seconds.
- * @param[in] high_accuracy If 1 use high accuracy (0.01 arcsecs) computation. If 0 use low accuracy (1 arcsecs).
+ * @param[in] accuracy If M_HIGH_ACC use high accuracy (0.01 arcsecs) computation. If M_LOW_ACC use low accuracy (1 arcsecs).
  *
  * @return function status
  * @retval M_INVALID_RANGE_ERR jde out of the validity range of formula.
  * @retval M_NO_ERR function completed correctly
  */
 m_err_t
-ecl_true_obl_ecliptic (double jde, double *obl, int high_accuracy)
+ecl_true_obl_ecliptic (double jde, double *obl, m_acc_t accuracy)
 {
-    m_err_t err = ecl_mean_obl_ecliptic (jde, obl, high_accuracy);
+    m_err_t err = ecl_mean_obl_ecliptic (jde, obl, accuracy);
     if (err)
         return err;
-    *obl += ecl_nut_in_obl (jde, high_accuracy);
+    *obl += ecl_nut_in_obl (jde, accuracy);
     return M_NO_ERR;
 }

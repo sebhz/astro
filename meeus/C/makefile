@@ -7,6 +7,7 @@ MEEUS_OBJ = lib/datetime.o \
             lib/refraction.o \
 	        lib/sun.o \
 	        lib/equinox.o \
+	        lib/kepler.o \
 	        lib/equation_time.o \
 	        lib/util.o \
 	        lib/vsop87.o

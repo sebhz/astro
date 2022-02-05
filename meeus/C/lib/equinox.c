@@ -139,14 +139,14 @@ eqx_iterate_equinox (double jde0, int k)
  * @brief Compute equinoxes and solstice for a given year
  *
  * @param[inout] eqx structure containing year as well as equinox and solstices
- * @param[in] high_accuracy If 1 use high accuracy method. Else use low accuracy
+ * @param[in] accuracy If M_HIGH_ACC use high accuracy method. Else use low accuracy
  */
 void
-eqx_get_sol_eqx (struct eqx_s *eqx, int high_accuracy)
+eqx_get_sol_eqx (struct eqx_s *eqx, m_acc_t accuracy)
 {
     eqx_get_mean_sol_eqx (eqx);
 
-    if (!high_accuracy) {
+    if (accuracy == M_LOW_ACC) {
         eqx->mar_eqx = eqx_correct_equinox (eqx->mar_eqx);
         eqx->jun_sol = eqx_correct_equinox (eqx->jun_sol);
         eqx->sep_eqx = eqx_correct_equinox (eqx->sep_eqx);

@@ -1,12 +1,25 @@
+/**
+ * @file refraction.c
+ * Meeus chapter 16. Atmospheric refraction.
+ */
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
 #include "meeus.h"
 
-/* Get refraction to be added to the true (=airless, calculated)
-   altitude, to get the apparent altitude.
-   Refraction is returned in minutes of arc.
-   h is true altitude in degrees */
+/**
+ * @brief refraction from airless
+ *
+ * Get the refraction to be added to the true (=airless, calculated)
+ * altitude of a celestial body, to get its apparent altitude.
+ *
+ * Implements Meeus formula 16.4.
+ *
+ * @param[in] h true altitude in degrees
+ * @param[in] corrected if 1, correct refraction to be exactly 0 at zenith.
+ *
+ * @return refraction in minutes of arc.
+ */
 double
 ref_refraction_true_to_apparent (double h, int corrected)
 {
@@ -17,11 +30,19 @@ ref_refraction_true_to_apparent (double h, int corrected)
     return R;
 }
 
-/* Get refraction to be substracted to the apparent (=seen, measured)
-   altitude, to get the true altitude.
-   Refraction is returned in minutes of arc.
-   h0 is apparent altitude in degrees */
-double
+/**
+ * @brief refraction from measured
+ *
+ * Get the refraction to be substracted from the apparent (=seen, measured)
+ * altitude of a celestial body, to get its true altitude.
+ *
+ * Implements Meeus formula 16.3.
+ *
+ * @param[in] h0 apparent altitude in degrees
+ * @param[in] corrected if 1, correct refraction to be exactly 0 at zenith.
+ *
+ * @return refraction in minutes of arc.
+ */ double
 ref_refraction_apparent_to_true (double h0, int corrected)
 {
     /* Meeus 16.3 */

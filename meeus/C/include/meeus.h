@@ -8,6 +8,13 @@ typedef enum meeus_error_e
     M_INVALID_RANGE_ERR
 } m_err_t;
 
+/* accuracy */
+typedef enum meeus_accuracy_e
+{
+    M_LOW_ACC = 0,
+    M_HIGH_ACC
+} m_acc_t;
+
 /* math */
 #define sind(x) sin((x)/180.0*M_PI)
 #define cosd(x) cos((x)/180.0*M_PI)
@@ -101,10 +108,10 @@ double ref_refraction_true_to_apparent (double h, int corrected);
 double ref_refraction_apparent_to_true (double h0, int corrected);
 
 /* ecliptic */
-double ecl_nut_in_lon (double jde, int high_accuracy);
-double ecl_nut_in_obl (double jde, int high_accuracy);
-m_err_t ecl_mean_obl_ecliptic (double jde, double *obl, int high_accuracy);
-m_err_t ecl_true_obl_ecliptic (double jde, double *obl, int high_accuracy);
+double ecl_nut_in_lon (double jde, m_acc_t accuracy);
+double ecl_nut_in_obl (double jde, m_acc_t accuracy);
+m_err_t ecl_mean_obl_ecliptic (double jde, double *obl, m_acc_t accuracy);
+m_err_t ecl_true_obl_ecliptic (double jde, double *obl, m_acc_t accuracy);
 
 /* equinox and solstice */
 struct eqx_s
@@ -115,7 +122,7 @@ struct eqx_s
     double sep_eqx;
     double dec_sol;
 };
-void eqx_get_sol_eqx (struct eqx_s *eqx, int high_accuracy);
+void eqx_get_sol_eqx (struct eqx_s *eqx, m_acc_t accuracy);
 
 /* sun */
 m_err_t sun_mean_geocentric_coord (double jde, double *alpha, double *delta,
@@ -130,6 +137,9 @@ void sun_apparent_ecliptic_coord (double jde, double *lambda, double *beta,
 
 /* equation of time */
 m_err_t eqt_equation_of_time (double jde, double *eqt);
+
+/* Kepler's equation */
+double kep_get_eccentric_anomaly (double M, double e);
 
 /* vsop87 */
 void vso_vsop87d_coordinates (double jde, enum planet_e planet,

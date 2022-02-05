@@ -174,7 +174,7 @@ test_coordinates (void)
     printf
         ("Meeus - 13.a (equatorial to ecliptical - mean J2000 obliquity) - ");
     dt_date_to_jd (&td, &jd);
-    ecl_mean_obl_ecliptic (jd, &epsilon, 1);
+    ecl_mean_obl_ecliptic (jd, &epsilon, M_HIGH_ACC);
     res (epsilon, dms_to_arcsec (23, 26, 21.448), 0, 0);
 
     coo_equ_to_ecl (116.328942, 28.026183, epsilon / 3600, &lambda, &beta);
@@ -196,7 +196,7 @@ test_coordinates (void)
 
     printf
         ("Meeus - 13.b (equatorial to horizontal - true obliquity of ecliptic) - ");
-    ecl_true_obl_ecliptic (jd, &epsilon, 1);    /* negligible error here - we should use JDE and not JD */
+    ecl_true_obl_ecliptic (jd, &epsilon, M_HIGH_ACC);   /* negligible error here - we should use JDE and not JD */
     arcs_to_dms (epsilon, &d, &m, &s);
     res_coord ((double[]) { d, m, s }, (double[]) { 23, 26, 36.87 }, 2, 0);
 
@@ -266,17 +266,17 @@ test_ecliptic (void)
     res (ecl_nut_in_obl (jd, 0), 9.5, 1, 0);    /* Accurate to 0.1" so we are OK */
     printf
         ("Meeus - 22.a (mean obliquity of the ecliptic - low accuracy) - ");
-    ecl_mean_obl_ecliptic (jd, &epsilon, 0);
+    ecl_mean_obl_ecliptic (jd, &epsilon, M_LOW_ACC);
     arcs_to_dms (epsilon, &d, &m, &s);
     res_coord ((double[]) { d, m, s }, (double[]) { 23, 26, 27.4 }, 1, 0);
     printf
         ("Meeus - 22.a (mean obliquity of the ecliptic - high accuracy) - ");
-    ecl_mean_obl_ecliptic (jd, &epsilon, 1);
+    ecl_mean_obl_ecliptic (jd, &epsilon, M_LOW_ACC);
     arcs_to_dms (epsilon, &d, &m, &s);
     res_coord ((double[]) { d, m, s }, (double[]) { 23, 26, 27.407 }, 3, 0);
     printf
         ("Meeus - 22.a (true obliquity of the ecliptic - high accuracy) - ");
-    ecl_true_obl_ecliptic (jd, &epsilon, 1);
+    ecl_true_obl_ecliptic (jd, &epsilon, M_HIGH_ACC);
     arcs_to_dms (epsilon, &d, &m, &s);
     res_coord ((double[]) { d, m, s }, (double[]) { 23, 26, 36.850 }, 3, 0);
 }
@@ -311,11 +311,11 @@ test_equinox (void)
     eqx.year = 1962;
     printf ("Meeus - 27.a (june solstice - low accuracy) - ");
     eqx_get_sol_eqx (&eqx, 0);
-    res (eqx.jun_sol, 2437837.39245, 5, 0);
+    res (eqx.jun_sol, 2437837.39245, 5, M_LOW_ACC);
     printf ("Meeus - 27.a (june solstice - high accuracy) - ");
     eqx_get_sol_eqx (&eqx, 1);
     /* Allowed to fail since we are using complete VSOP87 for sun's position */
-    res (eqx.jun_sol, 2437837.39213, 5, 1);
+    res (eqx.jun_sol, 2437837.39213, 5, M_HIGH_ACC);
 }
 
 void
@@ -326,6 +326,14 @@ test_equation_of_time (void)
     eqt_equation_of_time (2448908.5, &eqt);
     /* Allowed to fail since we are using complete VSOP87 for sun's position */
     res (eqt, 3.427351, 6, 1);
+}
+
+void
+test_kepler (void)
+{
+    printf ("Meeus - 30.a (Kepler equation) - ");
+    double E = kep_get_eccentric_anomaly (5, 0.1);
+    res (E, 5.554589, 6, 0);
 }
 
 void
@@ -351,6 +359,7 @@ main (int argc, char **argv)
     test_sun ();
     test_equinox ();
     test_equation_of_time ();
+    test_kepler ();
     test_vsop87 ();
     printf ("-----------------\nTEST STATUS: %s\n",
             success ? "PASS" : "FAIL");
