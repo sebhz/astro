@@ -13,7 +13,7 @@ get_sun_coord (double phi, double L)
     dt_get_current_jd (0, &jd);
     jde = dy_ut_to_dt (jd);
     /* Get sun apparent coordinates. Low accuracy is more than enough */
-    sun_apparent_geocentric_coord (jde, &alpha, &delta, 0);
+    sun_apparent_equatorial_coord (jde, &alpha, &delta, 0);
 
     /* We now have the sun geocentric coordinates.
        Let's convert them to horizontal coordinates

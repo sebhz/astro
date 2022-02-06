@@ -1,3 +1,7 @@
+/**
+ * @file sun.c
+ * Meeus chapter 25. Geocentric coordinates of the Sun.
+ */
 #include <stdio.h>
 #include <math.h>
 #include "time.h"
@@ -36,10 +40,19 @@ static double aberration_coef_3[][3] = {
     {0.01, 154.7066, 359993.7286}
 };
 
+/**
+ * @brief Helper function to retrieve the necessary parameters
+ *               for Sun calculation
+ *
+ * @param[in] jde Julian Day Ephemeris (Dynamical time)
+ * @param[out] O sun true longitude in degrees
+ * @param[out] nu sun true anomaly in degrees
+ * @param[out] R sun radius vector in AU
+ */
 static void
-sun_get_param (double jd, double *O, double *nu, double *R)
+sun_get_param (double jde, double *O, double *nu, double *R)
 {
-    double T = get_century_since_j2000 (jd);
+    double T = get_century_since_j2000 (jde);
 
     /* Geometric mean longitude of the sun - referred to the mean equinox
        of the day */
@@ -65,14 +78,24 @@ sun_get_param (double jd, double *O, double *nu, double *R)
     *R = (1.000001018 * (1 - e * e)) / (1 + e * cosd (*nu));
 }
 
-/* Return aberration correction in arcseconds */
+/**
+ * @brief Get sun aberration correction
+ *
+ * Implements Meeus formulas 25.10 and 25.11.
+ *
+ * @param[in] jde Julian Day Ephemeris (Dynamical time)
+ * @param[in] R Sun radius vector in AU
+ * @param[in] accuracy If M_HIGH_ACC, use high accuracy method. If M_LOW_ACC, use low accuracy method
+ *
+ * @return aberration correction in arcseconds.
+ */
 static double
-sun_get_aberration_correction (double jde, double R, int high_accuracy)
+sun_get_aberration_correction (double jde, double R, m_acc_t accuracy)
 {
     double tau = get_century_since_j2000 (jde) / 10;
     double deltaLambda = 3548.193;
 
-    if (!high_accuracy) {       /* Meeus 25.10 */
+    if (accuracy == M_LOW_ACC) {       /* Meeus 25.10 */
         return -20.4898 / R;
     }
 
@@ -105,6 +128,17 @@ sun_get_aberration_correction (double jde, double R, int high_accuracy)
     return -0.005775518 * R * deltaLambda;
 }
 
+/**
+ * @brief Get sun mean ecliptic geocentric coordinates
+ *
+ * This uses the high accuracy method, with VSOP87. Coordinates are returned in the FK5 reference.
+ *
+ * @param[in] jde Julian Day Ephemeris (Dynamical time)
+ * @param[out] lambda Sun ecliptic longitude in degrees
+ * @param[out] beta Sun ecliptic latitude in degrees
+ * @param[out] R Sun radius vector in AU
+ *
+ */
 void
 sun_mean_ecliptic_coord (double jde, double *lambda, double *beta, double *R)
 {
@@ -114,14 +148,27 @@ sun_mean_ecliptic_coord (double jde, double *lambda, double *beta, double *R)
     *lambda = rerange (coord[0] + 180, 360.0);
     *beta = -coord[1];
     *R = coord[2];
-    /* We now have the ecliptical coordinates of the sun referred to the dynamical equinox.
-       Convert to FK5 - Meeus 25.9 */
+#if 0
+    /* Meeus 25.9. Correction for Dynamical to FK5 reference.
+       Not required since the correction is already applied in vso_vsop87d_coordinates() */
     double T = get_century_since_j2000 (jde);
     double lambdaprime = *lambda - 1.397 * T - 0.00031 * T * T;
     *lambda -= 0.09033 / 3600.0;
     *beta += 0.03916 * (cosd (lambdaprime) - sind (lambdaprime)) / 3600.0;
+#endif
 }
 
+/**
+ * @brief Get sun apparent ecliptic geocentric coordinates
+ *
+ * This uses the high accuracy method, with VSOP87. Coordinates are returned in the FK5 reference.
+ *
+ * @param[in] jde Julian Day Ephemeris (Dynamical time)
+ * @param[out] lambda Sun ecliptic longitude in degrees
+ * @param[out] beta Sun ecliptic latitude in degrees
+ * @param[out] R Sun radius vector in AU
+ *
+ */
 void
 sun_apparent_ecliptic_coord (double jde, double *lambda, double *beta,
                              double *R)
@@ -136,9 +183,21 @@ sun_apparent_ecliptic_coord (double jde, double *lambda, double *beta,
     *lambda += correction / 3600.0;
 }
 
+/**
+ * @brief Get Sun mean equatorial coordinates
+ *
+ * @param[in] jde Julian Day Ephemeris (Dynamical time)
+ * @param[out] alpha Sun right ascension in degrees
+ * @param[out] delta Sun declination in degrees
+ * @param[in] accuracy If M_HIGH_ACC, use high accuracy method. If M_LOW_ACC, use low accuracy method
+ *
+ * @return status of the function
+ * @retval M_INVALID_RANGE_ERR jde is negative
+ * @retval M_NO_ERR function completed successfully
+ */
 m_err_t
-sun_mean_geocentric_coord (double jde, double *alpha, double *delta,
-                           int high_accuracy)
+sun_mean_equatorial_coord (double jde, double *alpha, double *delta,
+                           m_acc_t accuracy)
 {
     double O, nu, R, epsilon;
     m_err_t err;
@@ -147,7 +206,7 @@ sun_mean_geocentric_coord (double jde, double *alpha, double *delta,
     if (err)
         return err;
     epsilon = arcsec_to_deg (epsilon);
-    if (!high_accuracy) {
+    if (accuracy == M_LOW_ACC) {
         sun_get_param (jde, &O, &nu, &R);
         *alpha =
             rerange (rad_to_deg (atan2 (cosd (epsilon) * sind (O), cosd (O))),
@@ -162,9 +221,23 @@ sun_mean_geocentric_coord (double jde, double *alpha, double *delta,
     return M_NO_ERR;
 }
 
+/**
+ * @brief Get Sun apparent equatorial coordinates
+ *
+ * This uses the high accuracy method, with VSOP87. Coordinates are returned in the FK5 reference.
+ *
+ * @param[in] jde Julian Day Ephemeris (Dynamical time)
+ * @param[out] alpha Sun right ascension in degrees
+ * @param[out] delta Sun declination in degrees
+ * @param[in] accuracy If M_HIGH_ACC, use high accuracy method. If M_LOW_ACC, use low accuracy method
+ *
+ * @return status of the function
+ * @retval M_INVALID_RANGE_ERR jde is negative
+ * @retval M_NO_ERR function completed successfully
+ */
 m_err_t
-sun_apparent_geocentric_coord (double jde, double *alpha, double *delta,
-                               int high_accuracy)
+sun_apparent_equatorial_coord (double jde, double *alpha, double *delta,
+                               m_acc_t accuracy)
 {
     double O, nu, R, epsilon, T, omega, lambda, beta;
     m_err_t err;
@@ -174,7 +247,7 @@ sun_apparent_geocentric_coord (double jde, double *alpha, double *delta,
         return err;
     epsilon = arcsec_to_deg (epsilon);
 
-    if (!high_accuracy) {
+    if (accuracy == M_LOW_ACC) {
         sun_get_param (jde, &O, &nu, &R);
         T = get_century_since_j2000 (jde);
         omega = 125.04 - 1934.136 * T;

@@ -289,14 +289,14 @@ test_sun (void)
     double alpha, delta;
 
     dt_date_to_jd (&td, &jd);
-    sun_apparent_geocentric_coord (jd, &alpha, &delta, 0);
+    sun_apparent_equatorial_coord (jd, &alpha, &delta, M_LOW_ACC);
     printf ("Meeus - 25.a (Sun's right ascension - low precision) - ");
     res (alpha, 198.38083, 5, 0);
     printf ("Meeus - 25.a (Sun's declination - low precision) - ");
     res (delta, -7.78507, 5, 0);
-    sun_apparent_geocentric_coord (jd, &alpha, &delta, 1);
 
     /* Following test allowed to fail since we are using complete VSOP87 */
+    sun_apparent_equatorial_coord (jd, &alpha, &delta, M_HIGH_ACC);
     printf ("Meeus - 25.b (Sun's right ascension - high precision) - ");
     res (alpha, hms_to_d (13, 13, 30.749), 6, 1);
     printf ("Meeus - 25.b (Sun's declination - high precision) - ");

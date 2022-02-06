@@ -1,13 +1,23 @@
+/**
+ * @file vsop87.c
+ * Meeus chapter 32. Full VSOP87D theory. Return planet heliocentric ecliptical coordinates
+ */
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
 #include "meeus.h"
 #include "vsop87.h"
 
-/* Base implementation of the procedure described in the 
-   VSOP87 readme and Meeus book.
-   Results are returned in radians, referred to the mean
-   dynamical ecliptic and equinox */
+/**
+ * @brief Get planet heliocentric ecliptical coordinates
+ *
+ * Implementation of the procedure described in the VSOP87 readme and Meeus chapter 32.
+ * Results are returned in radians, referred to the mean dynamical ecliptic and equinox
+ *
+ * @param[in] jde Julian Day Ephemeris (Dynamical time)
+ * @param[in] planet planet for which the calculation must be performed
+ * @param[out] coord coordinates. coord[0] = L (longitude), coord[1] = B (latitude), coord[2] = R (radius vector).
+ */
 void
 vso_vsop87d_dyn_coordinates (double jde, enum planet_e planet, double *coord)
 {
@@ -34,9 +44,16 @@ vso_vsop87d_dyn_coordinates (double jde, enum planet_e planet, double *coord)
     }
 }
 
-/* Corrected implementation described in Meeus 32.3.
-   Results are returned in degrees and referred to the
-   FK5 system */
+/**
+ * @brief Get planet heliocentric ecliptical coordinates
+ *
+ * Implements correction in Meeus formula 32.3.
+ * Results are returned in radians, referred to the mean ecliptic and equinox of the date (FK5 frame).
+ *
+ * @param[in] jde Julian Day Ephemeris (Dynamical time)
+ * @param[in] planet planet for which the calculation must be performed
+ * @param[out] coord coordinates. coord[0] = L (longitude), coord[1] = B (latitude), coord[2] = R (radius vector).
+ */
 void
 vso_vsop87d_coordinates (double jde, enum planet_e planet, double *coord)
 {

@@ -125,10 +125,10 @@ struct eqx_s
 void eqx_get_sol_eqx (struct eqx_s *eqx, m_acc_t accuracy);
 
 /* sun */
-m_err_t sun_mean_geocentric_coord (double jde, double *alpha, double *delta,
-                                   int high_accuracy);
-m_err_t sun_apparent_geocentric_coord (double jde, double *alpha,
-                                       double *delta, int high_accuracy);
+m_err_t sun_mean_equatorial_coord (double jde, double *alpha, double *delta,
+                                   m_acc_t accuracy);
+m_err_t sun_apparent_equatorial_coord (double jde, double *alpha,
+                                       double *delta, m_acc_t accuracy);
 void sun_mean_ecliptic_coord (double jde, double *lambda, double *beta,
                               double *R);
 void sun_apparent_ecliptic_coord (double jde, double *lambda, double *beta,

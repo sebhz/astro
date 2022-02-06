@@ -28,12 +28,12 @@ eqt_equation_of_time (double jde, double *eqt)
                          }, tau, 5);
     double alpha, delta, epsilon;
     m_err_t err;
-    err = sun_apparent_geocentric_coord (jde, &alpha, &delta, 1);
+    err = sun_apparent_equatorial_coord (jde, &alpha, &delta, M_HIGH_ACC);
     if (err)
         return err;
 
     double deltaPsi = ecl_nut_in_lon (jde, 1);
-    err = ecl_true_obl_ecliptic (jde, &epsilon, 1);
+    err = ecl_true_obl_ecliptic (jde, &epsilon, M_HIGH_ACC);
     *eqt = rerange (L0 - 0.0057183 - alpha +
                     deltaPsi / 3600.0 * cosd (epsilon / 3600.0), 360);
     return M_NO_ERR;
