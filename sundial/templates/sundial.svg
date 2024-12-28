@@ -3,16 +3,20 @@
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"
     xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-    viewBox="{{ minx }} {{ miny }} {{ width }} {{ height }}"
+    viewBox="{{ '{0:0.4f}'.format(minx) }} {{ '{0:0.4f}'.format(miny) }} {{ '{0:0.4f}'.format(width) }} {{ '{0:0.4f}'.format(height) }}"
     preserveAspectRatio="xMidYMid">
     <title>Planar sundial</title>
     <desc>Sundial (phi:{{ '{0:0.4f}'.format(phi) }}, D:{{ '{0:0.4f}'.format(D) }}, z:{{ '{0:0.4f}'.format(z) }}, a:{{ '{0:0.4f}'.format(a) }}, l:{{ '{0:0.4f}'.format(l) }})</desc>
     <!-- Axis -->
     <g inkscape:groupmode="layer" id="layer1" inkscape:label="Axis">
-        <line x1="{{ minx }}" y1="0" x2="{{ maxx }}" y2="0" style="stroke:rgb(0,127,0);stroke-width:0.1; stroke-dasharray:2 2"/>
-        <path d="M{{ maxx-3}} 1 L{{ maxx-1 }} 0 L{{ maxx-3 }} -1 Z" stroke="rgb(0,127,0)" fill="rgb(0,127,0)"/>
-        <line x1="0" y1="{{ miny }}" x2="0" y2="{{ maxy }}" style="stroke:rgb(0,127,0);stroke-width:0.1; stroke-dasharray:2 2"/>
-        <path d="M1 {{ miny+3 }} L 0 {{ miny+1 }} L-1 {{ miny+3 }} Z" stroke="rgb(0,127,0)" fill="rgb(0,127,0)"/>
+        <line x1="{{ '{0:0.4f}'.format(minx) }}" y1="0" x2="{{ '{0:0.4f}'.format(maxx)}}" y2="0" style="stroke:rgb(0,127,0);stroke-width:0.1; stroke-dasharray:0.5 0.5"/>
+        <!-- TODO: why is the tip of the arrow outside of the sundial
+        <path d="M {{ '{0:0.4f}'.format(maxx-arrow_shape[0]) }} {{ '{0:0.4f}'.format(arrow_shape[1]/2) }} L {{ '{0:0.4f}'.format(maxx) }} 0 L {{ '{0:0.4f}'.format(maxx-arrow_shape[0]) }} {{ '{0:0.4f}'.format(-arrow_shape[1]/2) }} Z" stroke="rgb(0,127,0)" fill="rgb(0,127,0)"/>
+        -->
+        <line x1="0" y1="{{ '{0:0.4f}'.format(miny) }}" x2="0" y2="{{ '{0:0.4f}'.format(maxy)}}" style="stroke:rgb(0,127,0);stroke-width:0.1; stroke-dasharray:0.5 0.5"/>
+        <!-- TODO: fix this too
+        <path d="M 1 {{ '{0:0.4f}'.format(miny+3) }} L 0 {{ '{0:0.4f}'.format(miny+1) }} L -1 {{ '{0:0.4f}'.format(miny+3) }} Z" stroke="rgb(0,127,0)" fill="rgb(0,127,0)"/>
+        -->
     </g>
     <!-- Hour lines -->
     <g inkscape:groupmode="layer" id="layer2" inkscape:label="Hourlines">
@@ -23,36 +27,41 @@
     <!-- Declinations of the sun -->
     <g inkscape:groupmode="layer" id="layer3" inkscape:label="Declinations">
         {% for point in lines_d -%}
-        <line x1="{{ '{0[0]:0.4f}'.format(point) }}" y1="{{ '{0[1]:0.4f}'.format(point) }}" x2="{{ '{0[2]:0.4f}'.format(point) }}" y2="{{ '{0[3]:0.4f}'.format(point) }}" style="stroke:rgb(127,127,127);stroke-width:0.2" />
+        <line x1="{{ '{0[0]:0.4f}'.format(point) }}" y1="{{ '{0[1]:0.4f}'.format(point) }}" x2="{{ '{0[2]:0.4f}'.format(point) }}" y2="{{ '{0[3]:0.4f}'.format(point) }}" style="stroke:rgb(127,127,127);stroke-width:0.05" />
         {% endfor -%}
     </g>
     <!-- Intersection of hour lines and declinations -->
     <g inkscape:groupmode="layer" id="layer4" inkscape:label="Hourdots">
         {% for point in points -%}
         <circle cx="{{ '{0[0]:0.4f}'.format(point) }}" cy="{{ '{0[1]:0.4f}'.format(point) }}" r=".5" fill="black"/>
-        {%if show_coord %}
-        <text x="{{ point[0] + 2 }}" y="{{ point[1] }}" font-size="3px" fill="black">({{ '{0[0]:0.4f}'.format(point) }},{{ '{0:0.4f}'.format(-point[1]) }})</text>
-        {% endif %}
+        {% if show_coord %}
+        <text x="{{ point[0] + 2 }}" y="{{ point[1] }}" font-size="{{ font_size }}" fill="black">({{ '{0[0]:0.4f}'.format(point) }},{{ '{0:0.4f}'.format(-point[1]) }})</text>
+        {% endif -%}
         {% endfor -%}
     </g>
     <!-- Hour text -->
     <g inkscape:groupmode="layer" id="layer5" inkscape:label="Hourtext">
         {% for point in hours_t -%}
-        <text x="{{ '{0[0]:0.4f}'.format(point) }}" y="{{ '{0[1]:0.4f}'.format(point) }}" font-size="5px" fill="black">{{ point[2] }}</text>
+        <text x="{{ '{0[0]:0.4f}'.format(point) }}" y="{{ '{0[1]:0.4f}'.format(point) }}" font-size="{{ font_size }}" fill="black">{{ point[2] }}</text>
         {% endfor -%}
     </g>
     <g inkscape:groupmode="layer" id="layer6" inkscape:label="Stylus">
-        <!-- Center of the sundial -->
-        <circle cx="{{ '{0[0]:0.4f}'.format(center) }}" cy="{{ '{0[1]:0.4f}'.format(center) }}" r="1" fill="red"/>
-        <!-- Origin of the coordinate system -->
-        <circle cx="0" cy="0" r="1" fill="red"/>
+        <!-- Center of the sundial (base of the polar stylus) -->
+        <circle cx="{{ '{0[0]:0.4f}'.format(center) }}" cy="{{ '{0[1]:0.4f}'.format(center) }}" r=".5" style="stroke-width:0.1;stroke:red;fill:none"/>
+        <!-- Origin of the coordinate system (base of the perpendicular stylus) -->
+        <circle cx="0" cy="0" r=".5" style="stroke-width:0.1;stroke:red;fill:none"/>
     </g>
     <g inkscape:groupmode="layer" id="layer7" inkscape:label="legend">
         <!-- Cartouche -->
-        <text x="{{ minx + 5 }}" y="{{ miny + 6 }}" font-size="5px" fill="black">Latitude: {{ '{0:0.4f}'.format(phi) }}</text>
-        <text x="{{ minx + 5 }}" y="{{ miny + 12}}" font-size="5px" fill="black">Longitude: {{ '{0:0.4f}'.format(l) }}</text>
-        <text x="{{ minx + 5 }}" y="{{ miny + 18}}" font-size="5px" fill="black">Gnomonic declination: {{ '{0:0.4f}'.format(D) }}</text>
-        <text x="{{ minx + 5 }}" y="{{ miny + 24}}" font-size="5px" fill="black">Zenithal distance to azimuth: {{ '{0:0.4f}'.format(z) }}</text>
-        <text x="{{ minx + 5 }}" y="{{ miny + 30}}" font-size="5px" fill="black">Stylus length: {{ '{0:0.4f}'.format(a) }}</text>
+        <text x="{{ minx + 1 }}" y="{{ miny + font_size }}" font-size="{{ font_size }}" fill="black">Latitude: {{ '{0:0.4f}'.format(phi) }}</text>
+        <text x="{{ minx + 1 }}" y="{{ miny + 2*font_size }}" font-size="{{ font_size }}" fill="black">Longitude: {{ '{0:0.4f}'.format(l) }}</text>
+        <text x="{{ minx + 1 }}" y="{{ miny + 3*font_size }}" font-size="{{ font_size }}" fill="black">Gnomonic declination: {{ '{0:0.4f}'.format(D) }}</text>
+        <text x="{{ minx + 1 }}" y="{{ miny + 4*font_size }}" font-size="{{ font_size }}" fill="black">Zenithal distance to azimuth: {{ '{0:0.4f}'.format(z) }}</text>
+        <text x="{{ minx + 1 }}" y="{{ miny + 5*font_size }}" font-size="{{ font_size }}" fill="black">Stylus length: {{ '{0:0.4f}'.format(a) }}</text>
     </g>
+    {% if max_radius is not none %}
+    <g inkscape:groupmode="layer" id="layer8" inkscape:label="radius">
+        <circle cx="0" cy="0" r="{{ '{0:0.4f}'.format(max_radius) }}" stroke="black" stroke-width="0.4" fill="none"/>
+    </g>
+    {% endif -%}
 </svg>
