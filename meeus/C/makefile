@@ -29,7 +29,7 @@ all: $(PRG)
 $(MEEUS_OBJ): $(MEEUS_INC)
 
 $(MEEUS_LIB): $(MEEUS_OBJ)
-	ar r $@ $(MEEUS_OBJ) 
+	ar r $@ $(MEEUS_OBJ)
 
 $(TEST_OBJ): $(TEST_INC) $(MEEUS_INC)
 
