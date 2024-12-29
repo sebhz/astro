@@ -21,13 +21,17 @@
     <!-- Hour lines -->
     <g inkscape:groupmode="layer" id="layer2" inkscape:label="Hourlines">
         {% for point in lines_h -%}
+        <!-- hour: {{ point[2] }} -->
         <line x1="{{ '{0[0]:0.4f}'.format(center) }}" y1="{{ '{0[1]:0.4f}'.format(center) }}" x2="{{ '{0[0]:0.4f}'.format(point) }}" y2="{{ '{0[1]:0.4f}'.format(point) }}" style="stroke:rgb(0,0,0);stroke-width:0.2" />
         {% endfor -%}
     </g>
     <!-- Declinations of the sun -->
     <g inkscape:groupmode="layer" id="layer3" inkscape:label="Declinations">
-        {% for point in lines_d -%}
-        <line x1="{{ '{0[0]:0.4f}'.format(point) }}" y1="{{ '{0[1]:0.4f}'.format(point) }}" x2="{{ '{0[2]:0.4f}'.format(point) }}" y2="{{ '{0[3]:0.4f}'.format(point) }}" style="stroke:rgb(127,127,127);stroke-width:0.05" />
+        {% for decl_name, segments in lines_d.items() -%}
+        <!-- {{ decl_name }} declination -->
+        {% for segment in segments -%}
+        <line x1="{{ '{0[0]:0.4f}'.format(segment) }}" y1="{{ '{0[1]:0.4f}'.format(segment) }}" x2="{{ '{0[2]:0.4f}'.format(segment) }}" y2="{{ '{0[3]:0.4f}'.format(segment) }}" style="stroke:rgb(127,127,127);stroke-width:0.05" />
+        {% endfor -%}
         {% endfor -%}
     </g>
     <!-- Intersection of hour lines and declinations -->

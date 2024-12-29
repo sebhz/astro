@@ -46,11 +46,11 @@ class Sundial:
 
     declinations_dict = {
         -23.44: "Winter Sol.",
-        # -20.15: "-20.15",
-        # -11.47: "-11.47",
+        -20.15: "-20.15",
+        -11.47: "-11.47",
         0: "Equinox",
-        # 11.47: "11.47",
-        # 20.15: "20.15",
+        11.47: "11.47",
+        20.15: "20.15",
         23.44: "Summer Sol.",
     }
     declinations = sorted(list(declinations_dict.keys()))
@@ -128,7 +128,7 @@ class Sundial:
                 -x[1],
             )
 
-        SCALE_FACTOR = 1.1  # Must be > 1
+        scale_factor = 1.1  # Must be > 1
 
         if self.hour_lines is None:
             return None
@@ -157,10 +157,10 @@ class Sundial:
             (minx, miny) = (min(minx, -max_radius), min(miny, -max_radius))
             (maxx, maxy) = (max(maxx, max_radius), max(maxy, max_radius))
 
-        if SCALE_FACTOR < 1.0:
-            SCALE_FACTOR = 1.1
+        if scale_factor < 1.0:
+            scale_factor = 1.1
         height = maxy - miny
-        height_scaled = height * SCALE_FACTOR
+        height_scaled = height * scale_factor
 
         # We have 5 lines of legend, that we want to span over 1/8th of the height
         font_size = height_scaled / 8 / 5
@@ -228,9 +228,9 @@ class Sundial:
                 ),
             )
 
-        # This is a simple list of (x1, y1, x2, y2) tuple giving the segment of lines
-        # on each declinations
-        lines_d = []
+        # This is a dict of lists of (x1, y1, x2, y2) tuples giving the segments
+        # on each declinations, indexed by declination names
+        lines_d = {}
         for declination in Sundial.declinations:
             tmp = None
             declination_segments = []
@@ -269,14 +269,14 @@ class Sundial:
                         *last_point,
                     )
                 )
-            lines_d += declination_segments
+            lines_d[self.declinations_dict[declination]] = declination_segments
 
         # Final binding box computation
         width = maxx - minx
         height = maxy - miny
 
-        width_scaled = width * SCALE_FACTOR
-        height_scaled = height * SCALE_FACTOR
+        width_scaled = width * scale_factor
+        height_scaled = height * scale_factor
         x_offset = (width_scaled - width) / 2
         y_offset = (height_scaled - height) / 2
 

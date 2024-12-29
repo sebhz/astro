@@ -18,7 +18,7 @@ This script takes the following parameters
 - `l`: longitude of the sundial in degrees. Positive towards east, negative towards west. Used to rotate the sundial so that it displays "shifted GMT". Use 0 for true solar time.
 
 ## Getting points for other sun declinations
-Modify the `Sundial.declinations` and the `Sundial.declinations_names` tables.
+Modify the `Sundial.declinations_dict` dictionary.
 
 ## Interpreting the output
 Coordinates are measured in an orthogonal coordinate system, situated in the sundial plane.
@@ -38,7 +38,7 @@ The current time is indicated by the *shadow* of the polar stylus. Note that the
 - Equatorial sundial: the plane of the sundial is parallel to the equator plane. The sundial has two sides: northern side serves for positive declinations (spring/summer) and the southern side for negative declinations.
     - Northern side: z=90-phi, D=180
     - Southern side: z=90+phi, D=0
-- Horizontal sundial: z=0. D is undefined, so one can choose the x-axis direction. To simplify computation, use D=0 (x-axis towards east), but any value will yield the same result.
+- Horizontal sundial: z=0. D is undefined, so one can choose the x-axis direction. To simplify computations, use D=0 (x-axis towards east), but any value will yield the same result.
 - Vertical sundial: z=90. x-axis is horizontal, y-axis directed towards the zenith.
 
 ## Acknowledgements
