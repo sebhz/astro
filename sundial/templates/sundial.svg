@@ -3,6 +3,8 @@
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"
     xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+    width="{{ '{0:0.4f}{1}'.format(width, unit) }}"
+    height="{{ '{0:0.4f}{1}'.format(height, unit) }}"
     viewBox="{{ '{0:0.4f}'.format(minx) }} {{ '{0:0.4f}'.format(miny) }} {{ '{0:0.4f}'.format(width) }} {{ '{0:0.4f}'.format(height) }}"
     preserveAspectRatio="xMidYMid">
     <title>Planar sundial</title>

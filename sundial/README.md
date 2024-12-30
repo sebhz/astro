@@ -7,15 +7,17 @@ This script depends on python-prettytable for text output formatting, and python
 
 ## Parameters
 This script takes the following parameters
-- `phi`: latitude of the sundial in degrees (e.g. 46.5044339, if sundial located in Tarvisio, IT)
-- `D`: gnomonic declination. This is the azimuth of the perpendicular to the sundial plane, measured from the southern meridian, towards west. In degrees.
+- `p (phi)`: latitude of the sundial in degrees (e.g. 46.5044339, if sundial located in Tarvisio, IT)
+- `D (declination)`: gnomonic declination. This is the azimuth of the perpendicular to the sundial plane, measured from the southern meridian, towards west. In degrees.
     - D=0 -> sundial is "due south".
     - D=270 -> sundial is "due east".
-- `z`: zenithal distance of the stylus, in degrees.
+- `z (zenithal-distance)`: zenithal distance of the stylus, in degrees.
     - z=0 -> horizontal sundial.
     - z=90 -> vertical sundial.
-- `a`: length of the stylus (in an arbitrary unit - same unit is used for all the coordinates).
-- `l`: longitude of the sundial in degrees. Positive towards east, negative towards west. Used to rotate the sundial so that it displays "shifted GMT". Use 0 for true solar time.
+- `s (stylus-length)`: length of the stylus (in an arbitrary unit - same unit is used for all the coordinates).
+- `l (longitude)`: longitude of the sundial in degrees. Positive towards east, negative towards west. Used to rotate the sundial so that it displays "shifted GMT". Use 0 for true solar time.
+- `r (radius)`: If passed, the SVG output will figure a circle of radius `r`, centered on the origin. All points outside of the circle are ignored.
+- `u (unit)`: Unit for SVG output - useful for printing SVG. If none is passed, the SVG defaut (px) will be used.
 
 ## Getting points for other sun declinations
 Modify the `Sundial.declinations_dict` dictionary.
@@ -28,7 +30,7 @@ The y-axis coincides with the line of greatest slope of the sundial, and positiv
 The center of the sundial is the convergence point of all hour lines.
 
 ## Perpendicular vs polar stylus
-The perpendicular stylus has length `a`, is perpendicular to the sundial's plane and located at the origin of the coordinate system.
+The perpendicular stylus has length `s`, is perpendicular to the sundial's plane and located at the origin of the coordinate system.
 The current time is indicated by the *tip* of the perpendicular stylus.
 
 One can also use a *polar stylus*. Its base is located at the center of the sundial, its tip is the tip of the perpendicular stylus.

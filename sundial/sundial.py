@@ -55,12 +55,13 @@ class Sundial:
     }
     declinations = sorted(list(declinations_dict.keys()))
 
-    def __init__(self, phi, D, z, a, l=0.0):
+    def __init__(self, phi, D, z, a, l=0.0, u=""):
         self.phi = phi
         self.D = D
         self.z = z
         self.a = a
         self.l = l
+        self.unit = u
         phi_r = radians(self.phi)
         D_r = radians(self.D)
         z_r = radians(self.z)
@@ -246,6 +247,8 @@ class Sundial:
             # draw a circle, add two segments to connect the declination line
             # to the bounding circle.
             if max_radius is not None:
+                if not declination_segments: # Possible if we have a small radius
+                    continue
                 first_point = push_point(
                     (declination_segments[0][0:2]),
                     declination_segments[0][2:4],
@@ -305,6 +308,7 @@ class Sundial:
             "show_coord": False,
             "font_size": font_size,
             "arrow_shape": arrow_shape,
+            "unit": self.unit,
         }
         # Fill the template
         template = env.get_template("sundial.svg")
@@ -355,44 +359,64 @@ DEFAULT_A = 15.0
 PARSER = argparse.ArgumentParser()
 PARSER.add_argument(
     "--phi",
+    "-p",
     help="Latitude of the sundial in degrees. Positive towards north",
     type=float,
     required=True,
 )
 PARSER.add_argument(
-    "--D",
+    "--declination",
+    "-D",
     help="Declination of the sundial plane perpendicular in degrees",
     type=float,
     required=True,
 )
 PARSER.add_argument(
-    "--z", help="Zenithal distance of the stylus in degrees", type=float, required=True
+    "--zenithal-distance",
+    "-z",
+    help="Zenithal distance of the stylus in degrees",
+    type=float,
+    required=True,
 )
 PARSER.add_argument(
-    "--a",
+    "--stylus-length",
+    "-s",
     help=f"Length of the stylus (default: {DEFAULT_A:0.4f})",
     type=float,
     default=DEFAULT_A,
 )
 PARSER.add_argument(
-    "--l", help="Longitude of the sundial in degrees.", type=float, default=0.0
+    "--longitude",
+    "-l",
+    help="Longitude of the sundial in degrees.",
+    type=float,
+    default=0.0,
 )
 PARSER.add_argument(
-    "--r",
+    "--radius",
+    "-r",
     help="Maximum radius of the sundial - erase everything outside for SVG output",
     type=float,
 )
 PARSER.add_argument(
     "--svg",
+    "-g",
     help="Displays SVG rather than plain text",
     action="store_true",
     default=False,
 )
+PARSER.add_argument(
+    "--unit",
+    "-u",
+    help="Units of the coordinates (optional)",
+    choices=("cm", "mm", "in", "pt", "px"),
+    default="",
+)
 ARGS = PARSER.parse_args()
 
-SD = Sundial(ARGS.phi, ARGS.D, ARGS.z, ARGS.a, ARGS.l)
+SD = Sundial(ARGS.phi, ARGS.declination, ARGS.zenithal_distance, ARGS.stylus_length, ARGS.longitude, ARGS.unit)
 SD.compute_hour_lines()
 if not ARGS.svg:
     print(SD)
 else:
-    print(SD.get_svg(ARGS.r))
+    print(SD.get_svg(ARGS.radius))
