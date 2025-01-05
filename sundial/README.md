@@ -1,12 +1,11 @@
 # Planar sundials
-Script to help creating a planar sundial, with stylus perpendicular to the sundial plane.
+Scripts to help creating a planar sundial, with stylus perpendicular to the sundial plane.
 Can either output a table giving points on each hour line of the sundial, or an svg showing the sundial.
 
-## Dependencies
-This script depends on python-prettytable for text output formatting, and python-jinja2 for svg templating.
+## Usage
+`create_sundial.py [parameters]` will output a JSON description of the sundial to stdout
 
-## Parameters
-This script takes the following parameters
+Parameters:
 - `p (phi)`: latitude of the sundial in degrees (e.g. 46.5044339, if sundial located in Tarvisio, IT)
 - `D (declination)`: gnomonic declination. This is the azimuth of the perpendicular to the sundial plane, measured from the southern meridian, towards west. In degrees.
     - D=0 -> sundial is "due south".
@@ -16,11 +15,25 @@ This script takes the following parameters
     - z=90 -> vertical sundial.
 - `s (stylus-length)`: length of the stylus (in an arbitrary unit - same unit is used for all the coordinates).
 - `l (longitude)`: longitude of the sundial in degrees. Positive towards east, negative towards west. Used to rotate the sundial so that it displays "shifted GMT". Use 0 for true solar time.
+
+`txt.py [json_file]` will swallow a JSON description and output a text description of the sundial.
+If [json_file] is omitted, takes its output from stdin.
+
+`svg.py [parameters] [json_file]` will swallow a JSON description of the sundial and output an SVG drawing.
+
+Parameters:
 - `r (radius)`: If passed, the SVG output will figure a circle of radius `r`, centered on the origin. All points outside of the circle are ignored.
 - `u (unit)`: Unit for SVG output - useful for printing SVG. If none is passed, the SVG defaut (px) will be used.
 
+## Dependencies
+The txt.py script depends on python-prettytable for text output formatting. The svg.py script depends on python-jinja2 for svg templating.
+
+## Examples
+- Get a text description of a horizontal sundial in Tarvisio (IT) showing true solar time: `./create_sundial.py -p=46.5044339 -D=0 -z=0 -s=5 -l=0 | ./txt.py`
+- Get an SVG file for the same sundial, with a radius of 10 cm: `./create_sundial.py -p=46.5044339 -D=0 -z=0 -s=5 -l=0 | ./svg.py -r=10 -u=cm > sundial.svg`
+
 ## Getting points for other sun declinations
-Modify the `Sundial.declinations_dict` dictionary.
+Modify the `sundial.declinations_dict` dictionary.
 
 ## Interpreting the output
 Coordinates are measured in an orthogonal coordinate system, situated in the sundial plane.
